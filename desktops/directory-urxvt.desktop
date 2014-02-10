@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Name=URxvt
+GenericName=Terminal
+Comment=Open directory in terminal
+Exec=/usr/bin/urxvt -cd %U 
+TryExec=/usr/bin/urxvt
+Icon=utilities-terminal
+Terminal=false
+Type=Application
+Categories=System;
+MimeType=inode/directory;

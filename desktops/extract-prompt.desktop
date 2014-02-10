@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Name=extract-prompt
+GenericName=Extract prompt
+Comment=Extract archive in terminal
+Exec=urxvt -e sh -c "/home/shua/bin/extract-prompt %U"
+TryExec=/home/shua/bin/extract-prompt
+Icon=utilities-file-archiver
+Type=Application
+Terminal=false
+Categories=System;
+MimeType=application/x-gzip;application/x-bzip2;application/x-xz;application/zip
