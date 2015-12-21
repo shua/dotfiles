@@ -1,0 +1,25 @@
+
+alias ls="ls -h --color=auto"
+alias df="df -h"
+alias du="du -h"
+alias dlesg="dmesg --color=always | less -R"
+alias ssh="TERM=xterm-256color ssh"
+#alias sandy="TERM=xterm-256color sandy"
+alias emacs="emacs -nw"
+
+export WLANRTL="wlp0s26u1u4i2"
+export EDITOR="vim"
+export CC="clang"
+export CXX="clang++"
+export GOPATH=~/dvl/go
+
+function bashlogic_prompt {
+    local Or=$(tput setaf 3)
+    local Res=$(tput sgr0)
+
+    PS1="${Or}cd${Res} \${PWD/#\/home\/shua/~} ${Or}&&${Res} "
+    PS2="${Or}||${Res}"
+}
+
+bashlogic_prompt
+eval $(dircolors ~/conf/dircolors.256dark)

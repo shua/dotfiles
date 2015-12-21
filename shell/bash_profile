@@ -1,0 +1,7 @@
+#
+# ~/.bash_profile
+#
+
+export PATH=/home/shua/bin:$PATH:/home/shua/dvl/go/bin
+[[ -f ~/.bashrc ]] && . ~/.bashrc
+[[ -r /usr/share/bash-completion/bash_completion ]] && . /usr/share/bash-completion/bash_completion

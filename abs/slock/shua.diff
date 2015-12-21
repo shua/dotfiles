@@ -1,0 +1,73 @@
+diff --git a/slock.c.orig b/slock.c
+index face75e..4f730fa 100644
+--- a/slock.c.orig
++++ b/slock.c
+@@ -18,6 +18,8 @@
+ #include <X11/Xlib.h>
+ #include <X11/Xutil.h>
+ 
++# include <X11/extensions/dpms.h>
++
+ #if HAVE_BSD_AUTH
+ #include <login_cap.h>
+ #include <bsd_auth.h>
+@@ -96,6 +98,14 @@ getpw(void) { /* only run as root */
+ #endif
+ 
+ static void
++dpms_force_off(Display *dpy)
++{
++	DPMSEnable(dpy);
++	usleep(100000);
++	DPMSForceLevel(dpy, DPMSModeOff);
++}
++
++static void
+ #ifdef HAVE_BSD_AUTH
+ readpw(Display *dpy)
+ #else
+@@ -164,6 +174,9 @@ readpw(Display *dpy, const char *pws)
+ 				for(screen = 0; screen < nscreens; screen++) {
+ 					XSetWindowBackground(dpy, locks[screen]->win, locks[screen]->colors[0]);
+ 					XClearWindow(dpy, locks[screen]->win);
++
++					if (running)
++						dpms_force_off(dpy);
+ 				}
+ 			}
+ 			llen = len;
+@@ -240,8 +253,10 @@ lockscreen(Display *dpy, int screen) {
+ 		unlockscreen(dpy, lock);
+ 		lock = NULL;
+ 	}
+-	else 
++	else {
+ 		XSelectInput(dpy, lock->root, SubstructureNotifyMask);
++		dpms_force_off(dpy);
++	}
+ 
+ 	return lock;
+ }
+diff --git a/slock.c b/slock.c
+index face75e..33f4ec8 100644
+--- a/slock.c.orig
++++ b/slock.c
+@@ -189,6 +189,7 @@ unlockscreen(Display *dpy, Lock *lock) {
+ static Lock *
+ lockscreen(Display *dpy, int screen) {
+ 	char curs[] = {0, 0, 0, 0, 0, 0, 0, 0};
++	XClassHint *hint;
+ 	unsigned int len;
+ 	Lock *lock;
+ 	XColor color, dummy;
+@@ -212,6 +213,10 @@ lockscreen(Display *dpy, int screen) {
+ 	lock->win = XCreateWindow(dpy, lock->root, 0, 0, DisplayWidth(dpy, lock->screen), DisplayHeight(dpy, lock->screen),
+ 			0, DefaultDepth(dpy, lock->screen), CopyFromParent,
+ 			DefaultVisual(dpy, lock->screen), CWOverrideRedirect | CWBackPixel, &wa);
++	hint = XAllocClassHint();
++	hint->res_name = "slock";
++	hint->res_class = "slock";
++	XSetClassHint(dpy,lock->win,hint);
+ 	XAllocNamedColor(dpy, DefaultColormap(dpy, lock->screen), COLOR2, &color, &dummy);
+ 	lock->colors[1] = color.pixel;
+ 	XAllocNamedColor(dpy, DefaultColormap(dpy, lock->screen), COLOR1, &color, &dummy);
