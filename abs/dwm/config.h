@@ -69,10 +69,14 @@ static const char *slockcmd[] = { "slock", NULL};
 static const char *mutecmd[]  = { "amixer", "-q", "sset", "Master", "toggle" };
 static const char *volupcmd[] = { "amixer", "-q", "sset", "PCM", "5+" };
 static const char *voldncmd[] = { "amixer", "-q", "sset", "PCM", "5-" };
+static const char *bklticmd[] = { "xbacklight", "-inc", "5" };
+static const char *bkltdcmd[] = { "xbacklight", "-dec", "5" };
 static const char *kbdcmd[]   = { "kbd" };
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
+	{ 0,                            0x1008ff02, spawn,         {.v = bklticmd } },
+	{ 0,                            0x1008ff03, spawn,         {.v = bkltdcmd } },
 	{ 0,                            0x1008ff12, spawn,         {.v = mutecmd } },
 	{ 0,                            0x1008ff11, spawn,         {.v = voldncmd } },
 	{ 0,                            0x1008ff13, spawn,         {.v = volupcmd } },

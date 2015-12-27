@@ -10,6 +10,7 @@ alias emacs="emacs -nw"
 export WLANRTL="wlp0s26u1u4i2"
 export EDITOR="vim"
 export CC="clang"
+export CPP="clang -E"
 export CXX="clang++"
 export GOPATH=~/dvl/go
 
