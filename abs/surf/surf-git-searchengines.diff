@@ -1,31 +1,8 @@
-From ad76a6dd21910459502b2240b3fbb64bc735b817 Mon Sep 17 00:00:00 2001
-From: shuall <shualloret@gmail.com>
-Date: Fri, 23 Oct 2015 18:06:50 -0400
-Subject: [PATCH] searchengines
-
----
- config.def.h |  5 +++++
- surf.c       | 23 +++++++++++++++++++++--
- 2 files changed, 26 insertions(+), 2 deletions(-)
-
-diff --git a/config.def.h b/config.def.h
-index 5245129..483a5b3 100644
---- a/config.def.h
-+++ b/config.def.h
-@@ -139,3 +139,8 @@ static Button buttons[] = {
-     { ClkAny,               0,          8,      navigate,       { .i = -1 } },
-     { ClkAny,               0,          9,      navigate,       { .i = +1 } },
- };
-+
-+static SearchEngine searchengines[] = {
-+  { "g",        "http://www.google.com/search?q=%s"   },
-+};
-+
 diff --git a/surf.c b/surf.c
-index 28bffef..6ac09bf 100644
+index 23c49bd..5dc3d8b 100644
 --- a/surf.c
 +++ b/surf.c
-@@ -96,6 +96,11 @@ typedef struct {
+@@ -97,6 +97,11 @@ typedef struct {
  	regex_t re;
  } SiteStyle;
  
@@ -37,7 +14,7 @@ index 28bffef..6ac09bf 100644
  static Display *dpy;
  static Atom atoms[AtomLast];
  static Client *clients = NULL;
-@@ -177,6 +182,7 @@ static void loaduri(Client *c, const Arg *arg);
+@@ -179,6 +184,7 @@ static void loaduri(Client *c, const Arg *arg);
  static void navigate(Client *c, const Arg *arg);
  static Client *newclient(void);
  static void newwindow(Client *c, const Arg *arg, gboolean noembed);
@@ -45,17 +22,17 @@ index 28bffef..6ac09bf 100644
  static void pasteuri(GtkClipboard *clipboard, const char *text, gpointer d);
  static gboolean contextmenu(WebKitWebView *view, GtkWidget *menu,
                              WebKitHitTestResult *target, gboolean keyboard,
-@@ -827,8 +833,7 @@ loaduri(Client *c, const Arg *arg)
+@@ -840,8 +846,7 @@ loaduri(Client *c, const Arg *arg)
  		u = g_strdup_printf("file://%s", rp);
  		free(rp);
  	} else {
--		u = g_strrstr(uri, "://") ? g_strdup(uri)
+-		u = g_strrstr(uri, "://") || g_str_has_prefix(uri, "about:") ? g_strdup(uri)
 -		    : g_strdup_printf("http://%s", uri);
 +		u = parseuri(uri);
  	}
  
  	setatom(c, AtomUri, uri);
-@@ -1166,6 +1171,20 @@ menuactivate(GtkMenuItem *item, Client *c)
+@@ -1173,6 +1178,20 @@ menuactivate(GtkMenuItem *item, Client *c)
  	}
  }
  
@@ -70,12 +47,9 @@ index 28bffef..6ac09bf 100644
 +			return g_strdup_printf(searchengines[i].uri, uri + strlen(searchengines[i].token) + 1);
 +	}
 +
-+	return g_strrstr(uri, "://") ? g_strdup(uri) : g_strdup_printf("http://%s", uri);
++	return g_strrstr(uri, "://") || g_str_has_prefix(uri, "about:") ? g_strdup(uri) : g_strdup_printf("http://%s", uri);
 +}
 +
  void
  pasteuri(GtkClipboard *clipboard, const char *text, gpointer d)
  {
--- 
-2.6.2
-
