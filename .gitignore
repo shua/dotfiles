@@ -2,3 +2,5 @@ local
 abs/*/*.pkg.*
 abs/*/pkg
 abs/*/src
+abs/surf/surf
+abs/*/*.tar.gz
