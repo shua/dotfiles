@@ -11,22 +11,15 @@ if [ -d /etc/X11/xinit/xinitrc.d ]; then
   unset f
 fi
 
-# exec gnome-session
-# exec startkde
-# exec startxfce4
-# ...or the Window Manager of your choice
+# machine specific stuff
+[ -f "$HOME/conf/local/xinitrc" ] && . "$HOME/conf/local/xinitrc"
 
-# bummer, touchscreen is going
-xinput disable 9
-#xinput float 9
 xrdb -merge ~/.Xresources
 
-#touchegg &
 #start-pulseaudio-x11 &
-dwmclock.sh &
+$HOME/conf/bin/dwmclock.sh &
 compton -fGC -i 0.9 --sw-opti &
-wp &
+$HOME/conf/bin/wp &
 exec /usr/bin/dwm 2> ~/dwm.log
 #exec /home/shua/bin/dwm 2> ~/dwm.log
-#exec /home/shua/bin/loopdwm
 #exec st -g 205x64
