@@ -1,1 +1,4 @@
 local
+abs/*/*.pkg.*
+abs/*/pkg
+abs/*/src
