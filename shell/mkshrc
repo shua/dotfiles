@@ -601,15 +601,31 @@ done
 
 \unset p
 
-# locally set stuff like WLANRTL
-[ -f "$HOME/conf/local/shrc" ] && . "$HOME/conf/local/shrc"
-
 alias ls="ls -h --color=auto"
 alias df="df -h"
 alias du="du -h"
 alias dlesg="dmesg -H"
 alias ssh="TERM=xterm-256color ssh"
 alias emacs="emacs -nw"
+
+function box_prompt {
+	local Or=$(tput setaf 3)
+	local Res=$(tput sgr0)
+
+	PS1='#'; (( USER_ID )) && PS1='$'
+	PS4='[$EPOCHREALTIME] '; PS1=$'\001\r'"${Or}[${Res}"'${|
+		\typeset e=$?
+
+		(( e )) && REPLY+="$e$(tput setaf 3)|$(tput sgr0)"
+
+		\typeset d=${PWD:-?} p=~; [[ $p = ?(*/) ]] || d=${d/#$p/~}
+	\typeset m=${%d} n p=...; (( m > 0 )) || m=${#d}
+	(( m > (n = (COLUMNS/3 < 7 ? 7 : COLUMNS/3)) )) && d=${d:(-n)} || p=
+		REPLY+=$p$d
+
+		\return $e
+	}'"${Or}]${Res} "
+}
 
 function bashlogic_prompt {
 	Or=$(tput setaf 3)
@@ -635,8 +651,9 @@ function bashlogic_prompt {
     PS2="${Or}||${Res}"
 }
 
-bashlogic_prompt
 eval $(dircolors ~/conf/dircolors.256dark)
 
+# locally set stuff like WLANRTL and prompt
+[ -f "$HOME/conf/local/shrc" ] && . "$HOME/conf/local/shrc"
 
 \: place customisations above this line
