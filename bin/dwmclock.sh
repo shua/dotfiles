@@ -10,7 +10,8 @@ Impd () {
 			mpc current -f '[[%artist% - ]%title%]' > "$MPD_CUR"
 			mpc idle >/dev/null
 		done
-	sleep 5
+		echo "" > "$MPD_CUR"
+	sleep 10
 	done &
 }
 
