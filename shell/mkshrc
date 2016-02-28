@@ -613,27 +613,26 @@ function box_prompt {
 	local Res=$(tput sgr0)
 
 	PS1='#'; (( USER_ID )) && PS1='$'
-	PS4='[$EPOCHREALTIME] '; PS1=$'\001\r'"${Or}[${Res}"'${|
+	PS4='[$EPOCHREALTIME] '; PS1=$'\001\r''${|
+		REPLY+="${Or}[${Res}"
 		\typeset e=$?
-
-		(( e )) && REPLY+="$e$(tput setaf 3)|$(tput sgr0)"
-
-		\typeset d=${PWD:-?} p=~; [[ $p = ?(*/) ]] || d=${d/#$p/~}
-	\typeset m=${%d} n p=...; (( m > 0 )) || m=${#d}
-	(( m > (n = (COLUMNS/3 < 7 ? 7 : COLUMNS/3)) )) && d=${d:(-n)} || p=
-		REPLY+=$p$d
-
+	
+		(( e )) && REPLY+="$e${Or}|${Res}"
+	
+		\typeset d=${PWD:-?} p=~; [[ $p = ?(*/) ]] || d=${d/#$p/\~}
+		\typeset m=${%d} n p=...; (( m > 0 )) || m=${#d}
+		(( m > (n = (COLUMNS/3 < 7 ? 7 : COLUMNS/3)) )) && d=${d:(-n)} || p=
+		REPLY+="$p$d${Or}]${Res}"
+	
 		\return $e
-	}'"${Or}]${Res} "
+	} '
 }
 
 function bashlogic_prompt {
 	Or=$(tput setaf 3)
 	Res=$(tput sgr0)
 	
-	PS1='#'; (( USER_ID )) && PS1='$'; \: "${TERM:=vt100}${HOSTNAME:=$(\ulimit -c \
-	    0; hostname 2>/dev/null)}${EDITOR:=/bin/ed}${USER:=$(\ulimit -c 0; id -un \
-	    2>/dev/null || \echo \?)}${MKSH:=$(\builtin whence -p mksh)}"
+	PS1='#'; (( USER_ID )) && PS1='$'
 	PS4='[$EPOCHREALTIME] '; PS1=$'\001\r''${|
 		\typeset e=$?
 	
