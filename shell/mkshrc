@@ -614,8 +614,8 @@ alias emacs="emacs -nw"
 function box_prompt {
 	PS1='#'; (( USER_ID )) && PS1='$'
 	PS4='[$EPOCHREALTIME] '; PS1=$'\001\r''${|
-		REPLY+="${PCOL1}[${PCOLR}"
 		\typeset e=$?
+		REPLY+="${PCOL1}[${PCOLR}"
 	
 		(( e )) && REPLY+="$e${PCOL1}|${PCOLR}"
 	
