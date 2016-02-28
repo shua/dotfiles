@@ -608,30 +608,27 @@ alias dlesg="dmesg -H"
 alias ssh="TERM=xterm-256color ssh"
 alias emacs="emacs -nw"
 
-function box_prompt {
-	local Or=$(tput setaf 3)
-	local Res=$(tput sgr0)
+\typeset PCOL1=$(tput setaf 3)
+\typeset PCOLR=$(tput sgr0)
 
+function box_prompt {
 	PS1='#'; (( USER_ID )) && PS1='$'
 	PS4='[$EPOCHREALTIME] '; PS1=$'\001\r''${|
-		REPLY+="${Or}[${Res}"
+		REPLY+="${PCOL1}[${PCOLR}"
 		\typeset e=$?
 	
-		(( e )) && REPLY+="$e${Or}|${Res}"
+		(( e )) && REPLY+="$e${PCOL1}|${PCOLR}"
 	
 		\typeset d=${PWD:-?} p=~; [[ $p = ?(*/) ]] || d=${d/#$p/\~}
 		\typeset m=${%d} n p=...; (( m > 0 )) || m=${#d}
 		(( m > (n = (COLUMNS/3 < 7 ? 7 : COLUMNS/3)) )) && d=${d:(-n)} || p=
-		REPLY+="$p$d${Or}]${Res}"
+		REPLY+="$p$d${PCOL1}]${PCOLR}"
 	
 		\return $e
 	} '
 }
 
 function bashlogic_prompt {
-	Or=$(tput setaf 3)
-	Res=$(tput sgr0)
-	
 	PS1='#'; (( USER_ID )) && PS1='$'
 	PS4='[$EPOCHREALTIME] '; PS1=$'\001\r''${|
 		\typeset e=$?
@@ -641,13 +638,13 @@ function bashlogic_prompt {
 		\typeset d=${PWD:-?} p=~; [[ $p = ?(*/) ]] || d=${d/#$p/\~}
 		\typeset m=${%d} n p=...; (( m > 0 )) || m=${#d}
 		(( m > (n = (COLUMNS/3 < 7 ? 7 : COLUMNS/3)) )) && d=${d:(-n)} || p=
-		REPLY+="${Or}cd${Res} $p$d ${Or}&&${Res}"
+		REPLY+="${PCOL1}cd${PCOLR} $p$d ${PCOL1}&&${PCOLR}"
 	
 		\return $e
 	} '
 	
-#    PS1="${Or}cd${Res} \${PWD/#\/home\/shua/~} ${Or}&&${Res} "
-    PS2="${Or}||${Res}"
+#    PS1="${PCOL1}cd${PCOLR} \${PWD/#\/home\/shua/~} ${PCOL1}&&${PCOLR} "
+    PS2="${PCOL1}||${PCOLR}"
 }
 
 eval $(dircolors ~/conf/dircolors.256dark)
