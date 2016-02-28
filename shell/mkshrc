@@ -619,10 +619,18 @@ function box_prompt {
 	
 		(( e )) && REPLY+="$e${PCOL1}|${PCOLR}"
 	
-		\typeset d=${PWD:-?} p=~; [[ $p = ?(*/) ]] || d=${d/#$p/\~}
+		\typeset g="$(git branch 2>/dev/null | grep \*)"; 
+		if [ -n "$g" ]; then
+			\typeset gb="$(git rev-parse --show-toplevel)"
+			\typeset g="${gb##*/}${PCOL1}:${g##\* }${PCOLR}";
+			\typeset d p="$(git rev-parse --show-prefix)"; 
+			[ -n "$p" ] && d="${PCOL1}:${PCOLR}${p%%/}"
+		else
+			\typeset d=${PWD:-?} p=~; [[ $p = ?(*/) ]] || d=${d/#$p/\~}
+		fi
 		\typeset m=${%d} n p=...; (( m > 0 )) || m=${#d}
 		(( m > (n = (COLUMNS/3 < 7 ? 7 : COLUMNS/3)) )) && d=${d:(-n)} || p=
-		REPLY+="$p$d${PCOL1}]${PCOLR}"
+		REPLY+="$g$p$d${PCOL1}]${PCOLR}"
 	
 		\return $e
 	} '
@@ -633,12 +641,19 @@ function bashlogic_prompt {
 	PS4='[$EPOCHREALTIME] '; PS1=$'\001\r''${|
 		\typeset e=$?
 	
-		(( e )) && REPLY+="$e|"
+		(( e )) && REPLY+="$e${PCOL1};${PCOLR}"
 	
-		\typeset d=${PWD:-?} p=~; [[ $p = ?(*/) ]] || d=${d/#$p/\~}
+		\typeset g="$(git branch 2>/dev/null | grep \*)"; 
+		if [ -n "$g" ]; then
+			\typeset gb="$(git rev-parse --show-toplevel)"
+			\typeset g="${gb##*/}:${PCOL1}${g##\* }${PCOLR}";
+			\typeset d p="$(git rev-parse --show-prefix)"; [ -n "$p" ] && d="/${p%%/}"
+		else
+			\typeset d=${PWD:-?} p=~; [[ $p = ?(*/) ]] || d=${d/#$p/\~}
+		fi
 		\typeset m=${%d} n p=...; (( m > 0 )) || m=${#d}
 		(( m > (n = (COLUMNS/3 < 7 ? 7 : COLUMNS/3)) )) && d=${d:(-n)} || p=
-		REPLY+="${PCOL1}cd${PCOLR} $p$d ${PCOL1}&&${PCOLR}"
+		REPLY+="${PCOL1}cd${PCOLR} $g$p$d ${PCOL1}&&${PCOLR}"
 	
 		\return $e
 	} '
