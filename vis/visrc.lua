@@ -108,10 +108,10 @@ vis.events.win_open = function(win)
 		[".yaml"] = "yaml",
 	}
 
-	vis.command('set tabwidth 4')
-	vis.command('set rnu')
-	vis.command('set cul')
-	vis.command('set cc 80')
+	vis:command('set tabwidth 4')
+	vis:command('set rnu')
+	vis:command('set cul')
+	vis:command('set cc 80')
 
 	local filename = win.file.name
 
@@ -122,7 +122,7 @@ vis.events.win_open = function(win)
 				if #filename >= #pattern then
 					local s, e = string.find(filename, pattern, -#pattern, true)
 					if s ~= e and e == #filename then
-						vis.command('set syntax '.. lang)
+						vis:command('set syntax '.. lang)
 						return;
 					end
 				end

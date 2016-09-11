@@ -1,17 +1,17 @@
-# $Id: PKGBUILD 154170 2015-12-22 09:55:49Z spupykin $
+# $Id: PKGBUILD 165985 2016-03-10 18:31:18Z spupykin $
 # Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
 # Contributor: Dag Odenhall <dag.odenhall@gmail.com>
 # Contributor: Grigorios Bouzakis <grbzks@gmail.com>
 
 pkgname=dwm
 pkgver=6.1
-pkgrel=2
+pkgrel=3
 pkgdesc="A dynamic window manager for X"
 url="http://dwm.suckless.org"
 arch=('i686' 'x86_64')
 license=('MIT')
 options=(zipman)
-depends=('libx11' 'libxinerama' 'libxft' 'freetype2' 'st')
+depends=('libx11' 'libxinerama' 'libxft' 'freetype2' 'st' 'dmenu')
 install=dwm.install
 source=(http://dl.suckless.org/dwm/dwm-$pkgver.tar.gz
 	config.h

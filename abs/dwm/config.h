@@ -30,12 +30,16 @@ static const Rule rules[] = {
 	{ "Firefox",  NULL,       NULL,       1 << 1,       0,       -1 },
 	{ "Chromium", NULL,       NULL,       1 << 1,       0,       -1 },
 	{ "Chromium", NULL,       "crx_nckgahadagoaajjgafhacjanaoiihapd", 
-	                                      1 << 1,       1,        -1 },
+	                                      1 << 1,       1,       -1 },
+	{ "google-chrome-beta", NULL, NULL,   1 << 1,       0,       -1 },
 	{ "Surf",     NULL,       NULL,       1 << 1,       0,       -1 },
 	{ "tabbed",   "surf",     NULL,       1 << 1,       0,       -1 },
-	{ "Dwb",      NULL,       NULL,       1 << 1,       0,       -1 },
+	{ "Pidgin",   NULL,       NULL,       1 << 7,       0,       -1 },
+	{ "spotify",  NULL,       NULL,       1 << 8,       0,       -1 },
 	{ "Spotify",  NULL,       NULL,       1 << 8,       0,       -1 },
-	{ "st",       "download", NULL,            0,       1,        -1 },
+    { "Spotify",  "Spotify",  NULL,       1 << 8,       0,       -1 },
+    { "Spotify",  "Spotify",  "Spotify",  1 << 8,       0,       -1 },
+	{ "st",       "download", NULL,            0,       1,       -1 },
 };
 
 /* layout(s) */

@@ -1,0 +1,56 @@
+diff --git a/surf.c b/surf.c
+index 29b9ede..99cc8de 100644
+--- a/surf.c
++++ b/surf.c
+@@ -140,6 +140,11 @@ typedef struct {
+ 	regex_t re;
+ } SiteStyle;
+ 
++typedef struct {
++	char *token;
++	char *uri;
++} SearchEngine;
++
+ /* Surf */
+ static void usage(void);
+ static void die(const char *errstr, ...);
+@@ -152,6 +157,7 @@ static const char *getuserhomedir(const char *user);
+ static const char *getcurrentuserhomedir(void);
+ static Client *newclient(Client *c);
+ static void loaduri(Client *c, const Arg *a);
++static gchar *parseuri(const gchar *uri);
+ static const char *geturi(Client *c);
+ static void setatom(Client *c, int a, const char *v);
+ static const char *getatom(Client *c, int a);
+@@ -474,7 +480,7 @@ loaduri(Client *c, const Arg *a)
+ 		url = g_strdup_printf("file://%s", path);
+ 		free(path);
+ 	} else {
+-		url = g_strdup_printf("http://%s", uri);
++		url = parseuri(uri);
+ 	}
+ 
+ 	setatom(c, AtomUri, url);
+@@ -1449,6 +1455,22 @@ destroywin(GtkWidget* w, Client *c)
+ 		gtk_main_quit();
+ }
+ 
++gchar *
++parseuri(const gchar *uri) {
++	guint i;
++
++	for (i = 0; i < LENGTH(searchengines); i++) {
++		if (searchengines[i].token == NULL || searchengines[i].uri == NULL || *(uri + strlen(searchengines[i].token)) != ' ')
++			continue;
++		if (g_str_has_prefix(uri, searchengines[i].token))
++			return g_strdup_printf(searchengines[i].uri, uri + strlen(searchengines[i].token) + 1);
++	}
++
++	return g_strdup_printf("http://%s", uri);
++}
++
++
++
+ void
+ pasteuri(GtkClipboard *clipboard, const char *text, gpointer d)
+ {

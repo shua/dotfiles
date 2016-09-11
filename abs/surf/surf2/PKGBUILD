@@ -5,13 +5,15 @@
 # Contributor: Michael Witten <mfwitten>
 # Contributor: Raphael Proust <raphlalou at gmail dot com>
 
-pkgname=surf
-pkgver=0.7.2.g3d81a0f
+pkgname=surf2
+pkgver=0.6.198.gc64c368
 pkgrel=1
-pkgdesc='A simple web browser based on WebKit/GTK+.'
+pkgdesc='A simple web browser based on WebKit2/GTK+.'
 arch=('i686' 'x86_64')
 url='http://surf.suckless.org/'
 license=('MIT')
+provides=('surf')
+conflicts=('surf')
 depends=('libwebkit' 'xorg-xprop')
 optdepends=('dmenu: URL-bar'
             'ca-certificates: SSL verification'
@@ -19,8 +21,8 @@ optdepends=('dmenu: URL-bar'
             'curl: default download handler')
 makedepends=('pkgconfig')
 install='surf.install'
-source=("git://git.suckless.org/surf"
-        "surf-git-searchengines.diff"
+source=("git+git://git.suckless.org/surf#branch=surf-webkit2"
+        "surf-webkit2-search.diff"
         'config.h')
 md5sums=('SKIP'
          'SKIP'
@@ -34,7 +36,7 @@ pkgver () {
 
 prepare() {
   cd "${srcdir}/${_gitname}"
-  patch -Np1 -i "${srcdir}/surf-git-searchengines.diff"
+  patch -Np1 -i "${srcdir}/surf-webkit2-search.diff"
   cp "${srcdir}/config.h" config.h
 }
 
