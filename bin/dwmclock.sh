@@ -29,7 +29,11 @@ Smute () {
 }
 
 Sbat () {
-	acpi | awk '{if ($3 != "Discharging,") { printf "+" } printf "%d%%\n", $4}'
+	cap="$(cat /sys/class/power_supply/BAT1/capacity)"
+	status="$(cat /sys/class/power_supply/BAT1/status)"
+
+	[ "$status" = "Discharging" ] || printf '+'
+	printf '%d%%\n' "$cap"
 }
 
 Sdate () {

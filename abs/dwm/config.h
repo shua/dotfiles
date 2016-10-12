@@ -70,12 +70,13 @@ static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() 
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbgcolor, "-sf", selfgcolor, NULL };
 static const char *termcmd[]  = { "st", NULL };
 static const char *slockcmd[] = { "slock", NULL};
-static const char *mutecmd[]  = { "amixer", "-q", "sset", "Master", "toggle" };
-static const char *volupcmd[] = { "amixer", "-q", "sset", "Master", "5+" };
-static const char *voldncmd[] = { "amixer", "-q", "sset", "Master", "5-" };
-static const char *bklticmd[] = { "xbacklight", "-inc", "5" };
-static const char *bkltdcmd[] = { "xbacklight", "-dec", "5" };
-static const char *kbdcmd[]   = { "kbd" };
+static const char *mutecmd[]  = { "amixer", "-q", "sset", "Master", "toggle", NULL };
+static const char *volupcmd[] = { "amixer", "-q", "sset", "Master", "5+", NULL };
+static const char *voldncmd[] = { "amixer", "-q", "sset", "Master", "5-", NULL };
+static const char *bklticmd[] = { "xbacklight", "-inc", "5", NULL };
+static const char *bkltdcmd[] = { "xbacklight", "-dec", "5", NULL };
+static const char *kbdcmd[]   = { "kbd", NULL };
+static const char *wificmd[]  = { "wifi", NULL };
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
@@ -84,6 +85,7 @@ static Key keys[] = {
 	{ 0,                            0x1008ff12, spawn,         {.v = mutecmd } },
 	{ 0,                            0x1008ff11, spawn,         {.v = voldncmd } },
 	{ 0,                            0x1008ff13, spawn,         {.v = volupcmd } },
+	{ 0,                            0x1008ff95, spawn,         {.v = wificmd } },
 	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
 	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
