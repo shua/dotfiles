@@ -5,6 +5,7 @@ static char *scriptfile     = "~/.surf/script.js";
 static char *styledir       = "~/.surf/styles/";
 static char *cachedir       = "~/.surf/cache/";
 static char *cookiefile     = "~/.surf/cookies.txt";
+static char *embedid        = "";
 
 /* Webkit default features */
 static Parameter defconfig[ParameterLast] = {
@@ -69,10 +70,10 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
 /* DOWNLOAD(URI, referer) */
 #define DOWNLOAD(d, r) { \
         .v = (const char *[]){ "/bin/sh", "-c", \
-             "cd ~/dld; st -g 80x4-0-0 -c download -e /bin/sh -c \"curl -L -J -O --user-agent '$1'" \
+             "cd ~/dld; st -w \"$4\" -g 80x4-0-0 -n download -e /bin/sh -c \"curl -L -J -O --user-agent '$1'" \
              " --referer '$2' -b $3 -c $3 '$0';" \
              " sleep 5;\"", \
-             d, useragent, r, cookiefile, NULL \
+             d, useragent, r, cookiefile, embedid, NULL \
         } \
 }
 
@@ -89,7 +90,7 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
 /* VIDEOPLAY(URI) */
 #define VIDEOPLAY(u) {\
         .v = (const char *[]){ "/bin/sh", "-c", \
-             "mpv --really-quiet \"$0\"", u, NULL \
+             "mpv --really-quiet \"$0\" $([ -n \"$1\" ] && echo \"--wid $1\")", u, embedid,  NULL \
         } \
 }
 
@@ -178,7 +179,11 @@ static Button buttons[] = {
 
 static SearchEngine searchengines[] = {
   { "g",        "http://www.google.com/search?q=%s" },
+  { "gi",       "https://www.google.com/search?tbm=isch&q=%s" },
+  { "gs",       "https://scholar.google.com/scholar?q=%s" },
   { "s",        "https://www.startpage.com/do/search?query=%s" },
+  { "w",        "https://en.wikipedia.org/wiki/Special:Search/%s" },
+  { "y",        "http://www.youtube.com/results?search_query=%s" },
   { "en",       "http://dict.cc/?s=%s" },
   { "leo",      "http://dict.leo.org/ende?search=%s" },
   { "dict",     "http://www.thefreedictionary.com/%s" },

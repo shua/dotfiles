@@ -1,0 +1,48 @@
+diff --git a/config.def.h b/config.def.h
+index 6d3135e..ced4079 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -5,6 +5,7 @@ static char *scriptfile     = "~/.surf/script.js";
+ static char *styledir       = "~/.surf/styles/";
+ static char *cachedir       = "~/.surf/cache/";
+ static char *cookiefile     = "~/.surf/cookies.txt";
++static char *embedid        = "";
+ 
+ /* Webkit default features */
+ static Parameter defconfig[ParameterLast] = {
+@@ -58,10 +59,10 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
+ /* DOWNLOAD(URI, referer) */
+ #define DOWNLOAD(d, r) { \
+         .v = (const char *[]){ "/bin/sh", "-c", \
+-             "st -e /bin/sh -c \"curl -g -L -J -O --user-agent '$1'" \
++             "st -w \"$4\" -e /bin/sh -c \"curl -g -L -J -O --user-agent '$1'" \
+              " --referer '$2' -b $3 -c $3 '$0';" \
+              " sleep 5;\"", \
+-             d, useragent, r, cookiefile, NULL \
++             d, useragent, r, cookiefile, embedid, NULL \
+         } \
+ }
+ 
+@@ -78,7 +79,7 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
+ /* VIDEOPLAY(URI) */
+ #define VIDEOPLAY(u) {\
+         .v = (const char *[]){ "/bin/sh", "-c", \
+-             "mpv --really-quiet \"$0\"", u, NULL \
++             "mpv --really-quiet \"$0\" $([ -n \"$1\" ] && echo \"--wid=$1\")", u, embedid, NULL \
+         } \
+ }
+ 
+diff --git a/surf.c b/surf.c
+index fb3ef81..0ac538e 100644
+--- a/surf.c
++++ b/surf.c
+@@ -1674,7 +1674,8 @@ main(int argc, char *argv[])
+ 		defconfig CSETB(DiskCache, 1);
+ 		break;
+ 	case 'e':
+-		embed = strtol(EARGF(usage()), NULL, 0);
++		embedid = EARGF(usage());
++		embed = strtol(embedid, NULL, 0);
+ 		break;
+ 	case 'f':
+ 		defconfig CSETB(RunInFullscreen, 0);

@@ -23,8 +23,10 @@ makedepends=('pkgconfig')
 install='surf.install'
 source=("git+git://git.suckless.org/surf#branch=surf-webkit2"
         "surf-webkit2-search.diff"
+        "embedid.diff"
         'config.h')
 md5sums=('SKIP'
+         'SKIP'
          'SKIP'
          'SKIP')
 _gitname=surf
@@ -37,6 +39,7 @@ pkgver () {
 prepare() {
   cd "${srcdir}/${_gitname}"
   patch -Np1 -i "${srcdir}/surf-webkit2-search.diff"
+  patch -Np1 -i "${srcdir}/embedid.diff"
   cp "${srcdir}/config.h" config.h
 }
 
