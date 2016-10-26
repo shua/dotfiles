@@ -21,6 +21,6 @@ xrdb -merge ~/.Xresources
 $HOME/conf/bin/dwmclock.sh "$DWMCLOCK_FMT" &
 (which compton >/dev/null) && compton -fGC -i 0.9 --sw-opti &
 $HOME/conf/bin/wp &
-exec dwm 2> ~/dwm.log
+exec dwm 2> ~/.log/dwm.log
 #exec /home/shua/bin/dwm 2> ~/dwm.log
 #exec st -g 205x64

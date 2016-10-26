@@ -67,6 +67,6 @@ do
 		fi
 	done
 	xsetroot -name "$stat"
-    sleep 1s;
+    sleep 10s;
 done
 
