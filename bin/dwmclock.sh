@@ -1,7 +1,6 @@
 #!/bin/sh
 
 # helper functions
-NET_CUR="/tmp/current-network"
 MPD_CUR="/dev/shm/mpd_current"
 Impd () {
 	while :; do
@@ -17,9 +16,7 @@ Impd () {
 
 # status getters
 Swifi () {
-	# requires some fancy stuff in netctl
-	# to put name into /tmp/current-network
-	cat "$NET_CUR" 
+	wpa_cli list_networks |grep CURRENT |cut -f2
 }
 
 Smute () {
