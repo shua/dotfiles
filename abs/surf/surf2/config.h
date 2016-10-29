@@ -179,14 +179,18 @@ static Button buttons[] = {
 };
 
 static SearchEngine searchengines[] = {
+// general search
+  { "s",        "https://www.startpage.com/do/search?query=%s" },
   { "g",        "http://www.google.com/search?q=%s" },
   { "gi",       "https://www.google.com/search?tbm=isch&q=%s" },
   { "gs",       "https://scholar.google.com/scholar?q=%s" },
-  { "s",        "https://www.startpage.com/do/search?query=%s" },
   { "w",        "https://en.wikipedia.org/wiki/Special:Search/%s" },
   { "y",        "http://www.youtube.com/results?search_query=%s" },
-  { "en",       "http://dict.cc/?s=%s" },
-  { "leo",      "http://dict.leo.org/ende?search=%s" },
-  { "dict",     "http://www.thefreedictionary.com/%s" },
+// arch
   { "aur",      "https://aur.archlinux.org/packages/?O=0&K=%s" },
+  { "a",        "https://wiki.archlinux.org/index.php?search=%s" },
+// language stuffs
+  { "d",        "http://www.thefreedictionary.com/%s" },
+  { "de",       "http://dict.leo.org/ende?search=%s" },
+  { "ie",       "http://www.teanglann.ie/en/fuaim/%s" },
 };
