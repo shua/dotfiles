@@ -14,7 +14,7 @@ url='http://surf.suckless.org/'
 license=('MIT')
 provides=('surf')
 conflicts=('surf')
-depends=('libwebkit' 'xorg-xprop')
+depends=('webkit2gtk' 'xorg-xprop')
 optdepends=('dmenu: URL-bar'
             'ca-certificates: SSL verification'
             'xterm: default download handler'
