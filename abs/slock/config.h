@@ -1,2 +1,12 @@
-#define COLOR1 "black"
-#define COLOR2 "#FF9900"
+/* user and group to drop privileges to */
+static const char *user  = "nobody";
+static const char *group = "nobody";
+
+static const char *colorname[NUMCOLS] = {
+	"black",     /* after initialization */
+	"#FF9900",   /* during input */
+	"#CC4400",   /* wrong password */
+};
+
+/* treat a cleared input like a wrong password */
+static const int failonclear = 1;

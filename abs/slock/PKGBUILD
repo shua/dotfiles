@@ -1,36 +1,51 @@
-# $Id: PKGBUILD 124788 2014-12-28 22:25:00Z spupykin $
-# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Maintainer: Gaetan Bisson <bisson@archlinux.org>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
 # Contributor: Sebastian A. Liem <sebastian at liem dot se>
 
-pkgname=slock
-pkgver=1.2
+pkgname=slock-git
+_pkgname=slock
+pkgver=20161018.5974695
 pkgrel=1
-pkgdesc="A simple screen locker for X"
-arch=('i686' 'x86_64')
-url="http://tools.suckless.org/slock"
+pkgdesc='Simple X display locker'
+url='http://tools.suckless.org/slock'
+arch=('i686' 'x86_64' 'armv7h')
 license=('MIT')
-depends=('libxext')
-source=("http://dl.suckless.org/tools/$pkgname-$pkgver.tar.gz"
-        "config.h"
-        "shua.diff")
-md5sums=('ee65f6e9f5ce71f3a6088d53b2485430'
-         'SKIP'
-         'SKIP')
+makedepends=('git')
+depends=('libxrandr')
+source=('git://git.suckless.org/slock'
+        'config.h'
+        'shua.diff')
+sha1sums=('SKIP'
+          'SKIP'
+          'SKIP')
 
+provides=("${_pkgname}")
+conflicts=("${_pkgname}")
+
+pkgver() {
+	cd "${srcdir}/${_pkgname}"
+	git log -1 --format='%cd.%h' --date=short | tr -d -
+}
 
 prepare() {
-  cd "$srcdir/slock-$pkgver"
-  patch -Np1 -i "$srcdir/shua.diff"
-  cp "$srcdir/config.h" ./
+	cd "${srcdir}/${_pkgname}"
+	sed '/group =/s/nogroup/nobody/' -i config.def.h
+	sed \
+		-e 's/CPPFLAGS =/CPPFLAGS +=/g' \
+		-e 's/CFLAGS =/CFLAGS +=/g' \
+		-e 's/LDFLAGS =/LDFLAGS +=/g' \
+		-i config.mk
+#	patch -Np1 -i "$srcdir/shua.diff"
+	cp "$srcdir/config.h" ./
 }
 
 build() {
-  cd "$srcdir/slock-$pkgver"
-  make X11INC=/usr/include/X11 X11LIB=/usr/lib/X11
+	cd "${srcdir}/${_pkgname}"
+	make X11INC=/usr/include/X11 X11LIB=/usr/lib/X11
 }
 
 package() {
-  cd "$srcdir/slock-$pkgver"
-  make PREFIX=/usr DESTDIR="$pkgdir" install
-  install -m644 -D LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+	cd "${srcdir}/${_pkgname}"
+	make PREFIX=/usr DESTDIR="${pkgdir}" install
+	install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 }

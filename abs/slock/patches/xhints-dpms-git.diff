@@ -1,0 +1,65 @@
+diff --git a/slock.c b/slock.c
+index ad539dc..d8b44d6 100644
+--- a/slock.c
++++ b/slock.c
+@@ -18,6 +18,7 @@
+ #include <X11/keysym.h>
+ #include <X11/Xlib.h>
+ #include <X11/Xutil.h>
++#include <X11/extensions/dpms.h>
+ 
+ #include "arg.h"
+ #include "util.h"
+@@ -125,6 +126,14 @@ gethash(void)
+ }
+ 
+ static void
++dpms_force_off(Display *dpy)
++{
++	DPMSEnable(dpy);
++	usleep(100000);
++	DPMSForceLevel(dpy, DPMSModeOff);
++}
++
++static void
+ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
+        const char *hash)
+ {
+@@ -194,6 +203,9 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
+ 					                     locks[screen]->win,
+ 					                     locks[screen]->colors[color]);
+ 					XClearWindow(dpy, locks[screen]->win);
++
++					if (running)
++						dpms_force_off(dpy);
+ 				}
+ 				oldc = color;
+ 			}
+@@ -215,6 +227,7 @@ static struct lock *
+ lockscreen(Display *dpy, struct xrandr *rr, int screen)
+ {
+ 	char curs[] = {0, 0, 0, 0, 0, 0, 0, 0};
++	XClassHint *hint;
+ 	int i, ptgrab, kbgrab;
+ 	struct lock *lock;
+ 	XColor color, dummy;
+@@ -248,6 +261,11 @@ lockscreen(Display *dpy, struct xrandr *rr, int screen)
+ 	                                &color, &color, 0, 0);
+ 	XDefineCursor(dpy, lock->win, invisible);
+ 
++	hint = XAllocClassHint();
++	hint->res_name = "slock";
++	hint->res_class = "slock";
++	XSetClassHint(dpy, lock->win, hint);
++
+ 	/* Try to grab mouse pointer *and* keyboard for 600ms, else fail the lock */
+ 	for (i = 0, ptgrab = kbgrab = -1; i < 6; i++) {
+ 		if (ptgrab != GrabSuccess) {
+@@ -268,6 +286,7 @@ lockscreen(Display *dpy, struct xrandr *rr, int screen)
+ 				XRRSelectInput(dpy, lock->win, RRScreenChangeNotifyMask);
+ 
+ 			XSelectInput(dpy, lock->root, SubstructureNotifyMask);
++			dpms_force_off(dpy);
+ 			return lock;
+ 		}
+ 
