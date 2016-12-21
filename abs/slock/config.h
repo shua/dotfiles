@@ -1,11 +1,12 @@
+#include "theme.h"
 /* user and group to drop privileges to */
 static const char *user  = "nobody";
 static const char *group = "nobody";
 
 static const char *colorname[NUMCOLS] = {
 	"black",     /* after initialization */
-	"#FF9900",   /* during input */
-	"#CC4400",   /* wrong password */
+	th_colac1,   /* during input */
+	th_colac3,   /* wrong password */
 };
 
 /* treat a cleared input like a wrong password */

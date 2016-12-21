@@ -1,17 +1,16 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const char *fonts[] = {
-	"Terminess Powerline:pixelsize=12:antialias=false:autohint=false",
-	"monospace:size=10"
-};
-static const char dmenufont[]       =  "Terminess Powerline:pixelsize=12:antialias=false:autohint=false";
-static const char normbordercolor[] = "#444444";
-static const char normbgcolor[]     = "#222222";
-static const char normfgcolor[]     = "#bbbbbb";
-static const char selbordercolor[]  = "#ff9900";
-static const char selbgcolor[]      = "#ff9900";
-static const char selfgcolor[]      = "#444444"; // originally #eeeeee
+#include "theme.h"
+
+static const char *fonts[] = { th_font, "monospace:size=10" };
+#define dmenufont  th_font
+#define normbordercolor th_colbg2
+#define normbgcolor th_colbg1
+#define normfgcolor th_colfg1
+#define selbordercolor th_colac1
+#define selbgcolor th_colac1
+#define selfgcolor th_colbg2 // originally #eeeeee
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const unsigned int systraypinning = 0;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
@@ -89,17 +88,15 @@ static Key keys[] = {
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
-	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
-	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
-	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
-	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
+	{ MODKEY,                       XK_equal,  setmfact,       {.f = +0.05} },
+	{ MODKEY,                       XK_minus,  setmfact,       {.f = -0.05} },
+	{ MODKEY|ShiftMask,             XK_equal,  incnmaster,     {.i = +1 } },
+	{ MODKEY|ShiftMask,             XK_minus,  incnmaster,     {.i = -1 } },
 	{ MODKEY,                       XK_Return, zoom,           {0} },
-	{ MODKEY,                       XK_Tab,    view,           {0} },
 	{ MODKEY|ShiftMask,             XK_c,      killclient,     {0} },
-	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
-	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
-	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
-/*	{ MODKEY,                       XK_space,  setlayout,      {0} }, */
+	{ MODKEY|ShiftMask,             XK_t,      setlayout,      {.v = &layouts[0]} },
+	{ MODKEY|ShiftMask,             XK_f,      setlayout,      {.v = &layouts[1]} },
+	{ MODKEY|ShiftMask,             XK_m,      setlayout,      {.v = &layouts[2]} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
 	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
@@ -121,6 +118,8 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
 	{ MODKEY,                       XK_semicolon, spawn,       {.v = slockcmd } },
 	{ MODKEY,                       XK_space,  spawn,          {.v = kbdcmd } },
+/*	{ MODKEY,                       XK_Tab,    view,           {0} }, */
+/*	{ MODKEY,                       XK_space,  setlayout,      {0} }, */
 };
 
 /* button definitions */

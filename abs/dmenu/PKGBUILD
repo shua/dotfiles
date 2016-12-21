@@ -14,13 +14,16 @@ arch=('i686' 'x86_64')
 license=('MIT')
 depends=('sh' 'libxinerama' 'libxft' 'freetype2')
 source=("http://dl.suckless.org/tools/dmenu-$pkgver.tar.gz"
-        "config.h")
+        "config.h"
+        "theme.h")
 md5sums=('6fedf081133bc0725cb040b3b8ac3fac'
+         'SKIP'
          'SKIP')
 
 prepare() {
   cd $pkgname-$pkgver
   cp $srcdir/config.h ./
+  cp $srcdir/theme.h ./
 }
 
 build() {

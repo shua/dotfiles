@@ -18,18 +18,18 @@ static Parameter defconfig[ParameterLast] = {
 	SETB(FrameFlattening,    0),
 	SETB(Geolocation,        0),
 	SETB(HideBackground,     0),
-	SETB(Inspector,          0),
+	SETB(Inspector,          1),
 	SETB(JavaScript,         1),
 	SETB(KioskMode,          0),
 	SETB(LoadImages,         1),
-	SETB(MediaManualPlay,    0),
+	SETB(MediaManualPlay,    1),
 	SETB(Plugins,            1),
 	SETV(PreferredLanguages, ((char *[]){ NULL })),
 	SETB(RunInFullscreen,    0),
 	SETB(ScrollBars,         1),
 	SETB(ShowIndicators,     1),
 	SETB(SiteQuirks,         1),
-	SETB(SpellChecking,      0),
+	SETB(SpellChecking,      1),
 	SETV(SpellLanguages,     ((char *[]){ "en_US", NULL })),
 	SETB(StrictSSL,          0),
 	SETB(Style,              1),
@@ -47,34 +47,35 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
                                     WEBKIT_FIND_OPTIONS_WRAP_AROUND;
 
 #define SETPROP(p, q) { \
-        .v = (const char *[]){ "/bin/sh", "-c", \
-             "prop=\"`(xprop -id $2 $0 " \
-             "| sed \"s/^$0(STRING) = \\(\\\\\"\\?\\)\\(.*\\)\\1$/\\2/\" " \
-             "| xargs -0 printf %b) | dmenu`\" &&" \
-             "xprop -id $2 -f $1 8s -set $1 \"$prop\"", \
-             p, q, winid, NULL \
-        } \
+	.v = (const char *[]){ "/bin/sh", "-c", \
+	     "prop=\"`(xprop -id $2 $0 " \
+	     "| sed \"s/^$0(STRING) = \\(\\\\\"\\?\\)\\(.*\\)\\1$/\\2/\" " \
+	     "| xargs -0 printf %b) | dmenu`\" &&" \
+	     "xprop -id $2 -f $1 8s -set $1 \"$prop\"", \
+	     p, q, winid, NULL \
+	} \
 }
 
 
 #define SETPROPSUG(p, q, s) { \
-        .v = (const char *[]){ "/bin/sh", "-c", \
-             "prop=\"`((xprop -id $2 $0 " \
-             "| sed \"s/^$0(STRING) = \\(\\\\\"\\?\\)\\(.*\\)\\1$/\\2/\" " \
-             "| xargs -0 printf %b) && eval cat $3) | dmenu`\" &&" \
-             "xprop -id $2 -f $1 8s -set $1 \"$prop\"", \
-             p, q, winid, s, NULL \
-        } \
+	.v = (const char *[]){ "/bin/sh", "-c", \
+	     "prop=\"`((xprop -id $2 $0 " \
+	     "| sed \"s/^$0(STRING) = \\(\\\\\"\\?\\)\\(.*\\)\\1$/\\2/\" " \
+	     "| xargs -0 printf %b) && eval cat $3) | dmenu`\" &&" \
+	     "xprop -id $2 -f $1 8s -set $1 \"$prop\"", \
+	     p, q, winid, s, NULL \
+	} \
 }
 
 /* DOWNLOAD(URI, referer) */
 #define DOWNLOAD(d, r) { \
-        .v = (const char *[]){ "/bin/sh", "-c", \
-             "cd ~/dld; st -w \"$4\" -g 80x4-0-0 -n download -e /bin/sh -c \"curl -L -J -O --user-agent '$1'" \
-             " --referer '$2' -b $3 -c $3 '$0';" \
-             " sleep 5;\"", \
-             d, useragent, r, cookiefile, embedid, NULL \
-        } \
+	.v = (const char *[]){ "/bin/sh", "-c", \
+	     "cd ~/dld;" \
+	     "st -w \"$4\" -g 80x4-0-0 -n download -e /bin/sh -c \"" \
+	         "curl -L -J -O --user-agent '$1' --referer '$2' -b $3 -c $3 '$0';" \
+	         " sleep 5;\"", \
+	     d, useragent, r, cookiefile, embedid, NULL \
+	} \
 }
 
 /* PLUMB(URI) */
@@ -82,16 +83,16 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
  * "http://" or "https://" should be opened.
  */
 #define PLUMB(u) {\
-        .v = (const char *[]){ "/bin/sh", "-c", \
-             "xdg-open \"$0\"", u, NULL \
-        } \
+	.v = (const char *[]){ "/bin/sh", "-c", \
+	     "XEMBEDID=\"$1\" xdg-open \"$0\"", u, embedid, NULL \
+	} \
 }
 
 /* VIDEOPLAY(URI) */
 #define VIDEOPLAY(u) {\
-        .v = (const char *[]){ "/bin/sh", "-c", \
-             "mpv --really-quiet \"$0\" $([ -n \"$1\" ] && echo \"--wid $1\")", u, (a->i)?"":embedid,  NULL \
-        } \
+	.v = (const char *[]){ "/bin/sh", "-c", \
+	     "mpv --really-quiet \"$0\" $([ -n \"$1\" ] && echo \"--wid $1\")", u, (a->i)?"":embedid,  NULL \
+	} \
 }
 
 /* styles */
@@ -101,6 +102,7 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
  */
 static SiteStyle styles[] = {
 	/* regexp               file in $styledir */
+	{ "mail\.google\.com.*","gmail.css"   },
 	{ ".*",                 "default.css" },
 };
 
@@ -118,7 +120,7 @@ static Key keys[] = {
 	{ MODKEY,                GDK_KEY_slash,  spawn,      SETPROP("_SURF_FIND", "_SURF_FIND") },
 
 	{ 0,                     GDK_KEY_Escape, stop,       { 0 } },
-	{ MODKEY,                GDK_KEY_c,      stop,       { 0 } },
+/*	{ MODKEY,                GDK_KEY_c,      stop,       { 0 } }, */
 
 	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_r,      reload,     { .b = 1 } },
 	{ MODKEY,                GDK_KEY_r,      reload,     { .b = 0 } },
@@ -153,6 +155,7 @@ static Key keys[] = {
 
 	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_a,      togglecookiepolicy, { 0 } },
 	{ 0,                     GDK_KEY_F11,    togglefullscreen, { 0 } },
+	{ 0,                     GDK_KEY_F12,    toggleinspector, { 0 } },
 	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_o,      toggleinspector, { 0 } },
 
 	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_c,      toggle,     { .i = CaretBrowsing } },
