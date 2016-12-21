@@ -1,1 +1,0 @@
-you might have to copy the lexers folder into here as well
