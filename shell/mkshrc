@@ -28,7 +28,7 @@ case ${KSH_VERSION:-} in
 *) return 0 ;;
 esac
 
-[ "$TERM" != "linux" ] && [ -z "$DVTM" ] && [ -x $(which dvtm) ] && exec dvtm
+[ -z "$NO_DVTM_AUTO" ] && [ "$TERM" != "linux" ] && [ -z "$DVTM" ] && [ -x $(which dvtm) ] && exec dvtm
 
 PS1='#'; (( USER_ID )) && PS1='$'; \: "${TERM:=vt100}${HOSTNAME:=$(\ulimit -c \
     0; hostname 2>/dev/null)}${EDITOR:=/bin/ed}${USER:=$(\ulimit -c 0; id -un \

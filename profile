@@ -4,6 +4,6 @@ export CC="clang"
 export CPP="clang -E"
 export CXX="clang++"
 export GOPATH="$HOME/dvl/go"
-export VIS_PATH="$HOME/conf/vis"
+#export VIS_PATH="$HOME/conf/vis"
 
 #[[ -r /usr/share/bash-completion/bash_completion ]] && . /usr/share/bash-completion/bash_completion
