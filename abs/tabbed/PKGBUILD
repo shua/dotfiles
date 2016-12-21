@@ -23,6 +23,9 @@ prepare() {
   if [[ -f $SRCDEST/config.h ]]; then
     cp $SRCDEST/config.h $srcdir/$_pkgname/config.h
   fi
+  if [[ -f $SRCDEST/theme.h ]]; then
+    cp $SRCDEST/theme.h $srcdir/$_pkgname/theme.h
+  fi
 }
 
 build() {

@@ -1,17 +1,17 @@
 /* See LICENSE file for copyright and license details. */
-
+#include "theme.h"
 /* appearance */
 /*static const char font[]        = "monospace:size=9";*/
 static const char font[]        = "Terminess Powerline:pixelsize=13:antialias=false:autohint=false";
-static const char* normbgcolor  = "#222222";
-static const char* normfgcolor  = "#cccccc";
-static const char* selbgcolor   = "#555555";
-static const char* selfgcolor   = "#ffffff";
-static const char* urgbgcolor   = "#111111";
-static const char* urgfgcolor   = "#cc0000";
-static const char before[]      = "<";
-static const char after[]       = ">";
-static const char titletrim[]   = "...";
+static const char* normbgcolor  = th_colbg1;
+static const char* normfgcolor  = th_colfg1;
+static const char* selbgcolor   = th_colac1;
+static const char* selfgcolor   = th_colbg1;
+static const char* urgbgcolor   = th_colbg1;
+static const char* urgfgcolor   = th_colac2;
+static const char before[]      = "";
+static const char after[]       = "";
+static const char titletrim[]   = "…";
 static const int  tabwidth      = 200;
 static const Bool foreground    = True;
 static       Bool urgentswitch  = False;

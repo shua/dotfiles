@@ -20,7 +20,7 @@ md5sums=('SKIP'
 prepare() {
   cd $srcdir/$pkgname-$pkgver
   patch -Np1 -i $srcdir/shua.diff
-  cp $srcdir/config.h config.h
+  cp $srcdir/config.h ./
 }
 
 build() {
