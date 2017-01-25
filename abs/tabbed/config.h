@@ -2,7 +2,7 @@
 #include "theme.h"
 /* appearance */
 /*static const char font[]        = "monospace:size=9";*/
-static const char font[]        = "Terminess Powerline:pixelsize=13:antialias=false:autohint=false";
+static const char* font         = th_font;
 static const char* normbgcolor  = th_colbg1;
 static const char* normfgcolor  = th_colfg1;
 static const char* selbgcolor   = th_colac1;

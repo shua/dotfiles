@@ -72,8 +72,8 @@ static const char *slockcmd[] = { "slock", NULL};
 static const char *mutecmd[]  = { "amixer", "-q", "sset", "Master", "toggle", NULL };
 static const char *volupcmd[] = { "amixer", "-q", "sset", "Master", "5+", NULL };
 static const char *voldncmd[] = { "amixer", "-q", "sset", "Master", "5-", NULL };
-static const char *bklticmd[] = { "xbacklight", "-inc", "5", NULL };
-static const char *bkltdcmd[] = { "xbacklight", "-dec", "5", NULL };
+static const char *bklticmd[] = { "light", "-A", "5", NULL };
+static const char *bkltdcmd[] = { "light", "-U", "5", NULL };
 static const char *kbdcmd[]   = { "kbd", NULL };
 
 static Key keys[] = {
