@@ -1,5 +1,6 @@
 export PATH=$HOME/bin:$PATH:$HOME/dvl/go/bin
 export EDITOR="vis"
+export BROWSER="web"
 export CC="clang"
 export CPP="clang -E"
 export CXX="clang++"
