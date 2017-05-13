@@ -6,7 +6,7 @@
 # Contributor: Jeff 'codemac' Mickey <jeff@archlinux.org>
 
 pkgname=dmenu
-pkgver=4.6
+pkgver=4.7
 pkgrel=1
 pkgdesc="A generic menu for X"
 url="http://tools.suckless.org/dmenu/"
@@ -16,7 +16,7 @@ depends=('sh' 'libxinerama' 'libxft' 'freetype2')
 source=("http://dl.suckless.org/tools/dmenu-$pkgver.tar.gz"
         "config.h"
         "theme.h")
-md5sums=('6fedf081133bc0725cb040b3b8ac3fac'
+md5sums=('57b5c28f7e3de908f5e5c2a65cd72e16'
          'SKIP'
          'SKIP')
 

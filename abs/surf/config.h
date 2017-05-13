@@ -19,7 +19,7 @@ static Parameter defconfig[ParameterLast] = {
 	SETB(Geolocation,        0),
 	SETB(HideBackground,     0),
 	SETB(Inspector,          1),
-	SETB(JavaScript,         1),
+	SETB(JavaScript,         0),
 	SETB(KioskMode,          0),
 	SETB(LoadImages,         1),
 	SETB(MediaManualPlay,    1),
@@ -30,8 +30,8 @@ static Parameter defconfig[ParameterLast] = {
 	SETB(ShowIndicators,     1),
 	SETB(SiteQuirks,         1),
 	SETB(SpellChecking,      1),
-	SETV(SpellLanguages,     ((char *[]){ "en_US", NULL })),
-	SETB(StrictSSL,          0),
+	SETV(SpellLanguages,     ((char *[]){ "en_US", "de_DE", "es_US", "ie_IE", NULL })),
+	SETB(StrictTLS,          0),
 	SETB(Style,              1),
 	SETF(ZoomLevel,          1.0),
 };
@@ -42,6 +42,9 @@ static UriParameters uriparams[] = {
 	  FSETB(Plugins,    0),
 	}, },
 };
+
+/* default window size: width, height */
+static int winsize[] = { 800, 600 };
 
 static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
                                     WEBKIT_FIND_OPTIONS_WRAP_AROUND;
@@ -102,7 +105,6 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
  */
 static SiteStyle styles[] = {
 	/* regexp               file in $styledir */
-	{ "mail\.google\.com.*","gmail.css"   },
 	{ ".*",                 "default.css" },
 };
 
@@ -139,11 +141,12 @@ static Key keys[] = {
 	{ MODKEY,                GDK_KEY_u,      scroll,     { .i = 'l' } },
 
 
-	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_j,      zoom,       { .i = -1 } },
-	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_k,      zoom,       { .i = +1 } },
-	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_q,      zoom,       { .i = 0  } },
+/*	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_j,      zoom,       { .i = -1 } },*/
+/*	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_k,      zoom,       { .i = +1 } },*/
+/*	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_q,      zoom,       { .i = 0  } },*/
 	{ MODKEY,                GDK_KEY_minus,  zoom,       { .i = -1 } },
-	{ MODKEY,                GDK_KEY_plus,   zoom,       { .i = +1 } },
+	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_underscore,zoom,    { .i = +1 } },
+	{ MODKEY,                GDK_KEY_equal,  zoom,       { .i = 0  } },
 
 	{ MODKEY,                GDK_KEY_p,      clipboard,  { .b = 1 } },
 	{ MODKEY,                GDK_KEY_y,      clipboard,  { .b = 0 } },
@@ -158,7 +161,7 @@ static Key keys[] = {
 	{ 0,                     GDK_KEY_F12,    toggleinspector, { 0 } },
 	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_o,      toggleinspector, { 0 } },
 
-	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_c,      toggle,     { .i = CaretBrowsing } },
+/*	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_c,      toggle,     { .i = CaretBrowsing } }, */
 	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_f,      toggle,     { .i = FrameFlattening } },
 	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_g,      toggle,     { .i = Geolocation } },
 	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_s,      toggle,     { .i = JavaScript } },
@@ -188,6 +191,7 @@ static SearchEngine searchengines[] = {
   { "gi",       "https://www.google.com/search?tbm=isch&q=%s" },
   { "gs",       "https://scholar.google.com/scholar?q=%s" },
   { "w",        "https://en.wikipedia.org/wiki/Special:Search/%s" },
+  { "wa",       "http://www.wolframalpha.com/input/?i=%s" },
   { "y",        "http://www.youtube.com/results?search_query=%s" },
 // arch
   { "aur",      "https://aur.archlinux.org/packages/?O=0&K=%s" },

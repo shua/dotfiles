@@ -2,18 +2,18 @@
 
 _gitname=dvtm
 pkgname=dvtm-git
-pkgver=0.15.20.g43315c0
-pkgver() { cd $_gitname && git describe | sed 's/^v//; s/-/./g'; }
+pkgver=0.15.37.gb45828d
+pkgver() { ( cd $_gitname && git describe | sed 's/^v//; s/-/./g'; ) }
 pkgrel=1
 pkgdesc='Dynamic virtual terminal manager.'
 arch=('i686' 'x86_64')
 url='http://www.brain-dump.org/projects/dvtm/'
 license=('MIT')
-depends=('ncurses')
+depends=('sh' 'ncurses')
 makedepends=(git)
 provides=(dvtm)
 conflicts=(dvtm)
-source=('git://github.com/martanne/dvtm.git'
+source=('git+https://github.com/martanne/dvtm.git'
         'config.h')
 md5sums=('SKIP'
          'SKIP')
@@ -22,7 +22,7 @@ prepare() {
 	cd "${srcdir}/${_gitname}"
 
 	cp "${srcdir}/config.h" .
-	sed -i 's/CFLAGS =/CFLAGS +=/' config.mk
+	sed -i"" 's/CFLAGS =/CFLAGS +=/' config.mk
 }
 
 build() {
