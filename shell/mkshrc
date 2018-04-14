@@ -28,8 +28,6 @@ case ${KSH_VERSION:-} in
 *) return 0 ;;
 esac
 
-[ -z "$NO_DVTM_AUTO" ] && [ "$TERM" != "linux" ] && [ -z "$DVTM" ] && [ -x $(which dvtm) ] && exec dvtm
-
 PS1='#'; (( USER_ID )) && PS1='$'; \: "${TERM:=vt100}${HOSTNAME:=$(\ulimit -c \
     0; hostname 2>/dev/null)}${EDITOR:=/bin/ed}${USER:=$(\ulimit -c 0; id -un \
     2>/dev/null || \echo \?)}${MKSH:=$(\builtin whence -p mksh)}"
@@ -49,58 +47,6 @@ PS4='[$EPOCHREALTIME] '; PS1=$'\001\r''${|
 
 	\return $e
 } '"$PS1 "
-\alias ls=ls
-\unalias ls
-\alias l='ls -F'
-\alias la='l -a'
-\alias ll='l -l'
-\alias lo='l -alo'
-\alias doch='sudo mksh -c "$(\builtin fc -ln -1)"'
-\command -v rot13 >/dev/null || \alias rot13='tr \
-    abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ \
-    nopqrstuvwxyzabcdefghijklmNOPQRSTUVWXYZABCDEFGHIJKLM'
-if \command -v hd >/dev/null; then \:; elif \command -v hexdump >/dev/null; then
-	function hd {
-		hexdump -e '"%08.8_ax  " 8/1 "%02X " " - " 8/1 "%02X "' \
-		    -e '"  |" "%_p"' -e '"|\n"' "$@"
-	}
-else
-	function hd {
-		\typeset -Uui16 -Z11 pos=0
-		\typeset -Uui16 -Z5 hv=2147483647
-		\typeset dasc line i
-		\set +U
-
-		\cat "$@" | if \read -arN -1 line; then
-			\typeset -i1 'line[*]'
-			i=0
-			while (( i < ${#line[*]} )); do
-				hv=${line[i++]}
-				if (( (pos & 15) == 0 )); then
-					(( pos )) && \
-					    \builtin print -r -- "$dasc|"
-					\builtin print -n "${pos#16#}  "
-					dasc=' |'
-				fi
-				\builtin print -n "${hv#16#} "
-				#XXX EBCDIC, but we need [[:print:]] to fix this
-				if (( (hv < 32) || (hv > 126) )); then
-					dasc+=.
-				else
-					dasc+=${line[i-1]#1#}
-				fi
-				(( (pos++ & 15) == 7 )) && \
-				    \builtin print -n -- '- '
-			done
-			while (( pos & 15 )); do
-				\builtin print -n '   '
-				(( (pos++ & 15) == 7 )) && \
-				    \builtin print -n -- '- '
-			done
-			(( hv == 2147483647 )) || \builtin print -r -- "$dasc|"
-		fi
-	}
-fi
 
 # Berkeley C shell compatible dirs, popd, and pushd functions
 # Z shell compatible chpwd() hook, used to update DIRSTACK[0]
@@ -251,139 +197,6 @@ function pushd {
 	\dirs $fa
 }
 
-# pager (not control character safe)
-function smores {
-	(
-		\set +m
-		\cat "$@" |&
-		\trap "rv=\$?; 'kill' $! >/dev/null 2>&1; 'exit' \$rv" EXIT
-		while IFS= \read -pr line; do
-			llen=${%line}
-			(( llen == -1 )) && llen=${#line}
-			(( llen = llen ? (llen + COLUMNS - 1) / COLUMNS : 1 ))
-			if (( (curlin += llen) >= LINES )); then
-				\builtin print -n -- '\e[7m--more--\e[0m'
-				\read -u1 || \exit $?
-				[[ $REPLY = [Qq]* ]] && \exit 0
-				curlin=$llen
-			fi
-			\builtin print -r -- "$line"
-		done
-	)
-}
-
-# base64 encoder and decoder, RFC compliant, NUL safe, not EBCDIC safe
-function Lb64decode {
-	\set +U
-	\typeset c s="$*" t
-	[[ -n $s ]] || { s=$(\cat; \builtin print x); s=${s%x}; }
-	\typeset -i i=0 j=0 n=${#s} p=0 v x
-	\typeset -i16 o
-
-	while (( i < n )); do
-		c=${s:(i++):1}
-		case $c {
-		(=)	\break ;;
-		([A-Z])	(( v = 1#$c - 65 )) ;;
-		([a-z])	(( v = 1#$c - 71 )) ;;
-		([0-9])	(( v = 1#$c + 4 )) ;;
-		(+)	v=62 ;;
-		(/)	v=63 ;;
-		(*)	\continue ;;
-		}
-		(( x = (x << 6) | v ))
-		case $((p++)) {
-		(0)	\continue ;;
-		(1)	(( o = (x >> 4) & 255 )) ;;
-		(2)	(( o = (x >> 2) & 255 )) ;;
-		(3)	(( o = x & 255 ))
-			p=0
-			;;
-		}
-		t+=\\x${o#16#}
-		(( ++j & 4095 )) && \continue
-		\builtin print -n $t
-		t=
-	done
-	\builtin print -n $t
-}
-
-\set -A Lb64encode_tbl -- A B C D E F G H I J K L M N O P Q R S T U V W X Y Z \
-    a b c d e f g h i j k l m n o p q r s t u v w x y z 0 1 2 3 4 5 6 7 8 9 + /
-function Lb64encode {
-	\set +U
-	\typeset c s t
-	if (( $# )); then
-		\read -raN-1 s <<<"$*"
-		\unset s[${#s[*]}-1]
-	else
-		\read -raN-1 s
-	fi
-	\typeset -i i=0 n=${#s[*]} j v
-
-	while (( i < n )); do
-		(( v = s[i++] << 16 ))
-		(( j = i < n ? s[i++] : 0 ))
-		(( v |= j << 8 ))
-		(( j = i < n ? s[i++] : 0 ))
-		(( v |= j ))
-		t+=${Lb64encode_tbl[v >> 18]}${Lb64encode_tbl[v >> 12 & 63]}
-		c=${Lb64encode_tbl[v >> 6 & 63]}
-		if (( i <= n )); then
-			t+=$c${Lb64encode_tbl[v & 63]}
-		elif (( i == n + 1 )); then
-			t+=$c=
-		else
-			t+===
-		fi
-		if (( ${#t} == 76 || i >= n )); then
-			\builtin print $t
-			t=
-		fi
-	done
-}
-
-# Better Avalanche for the Jenkins Hash
-\typeset -Z11 -Uui16 Lbafh_v
-function Lbafh_init {
-	Lbafh_v=0
-}
-function Lbafh_add {
-	\set +U
-	\typeset s
-	if (( $# )); then
-		\read -raN-1 s <<<"$*"
-		\unset s[${#s[*]}-1]
-	else
-		\read -raN-1 s
-	fi
-	\typeset -i i=0 n=${#s[*]}
-
-	while (( i < n )); do
-		((# Lbafh_v = (Lbafh_v + s[i++] + 1) * 1025 ))
-		((# Lbafh_v ^= Lbafh_v >> 6 ))
-	done
-}
-function Lbafh_finish {
-	\typeset -Ui t
-
-	((# t = (((Lbafh_v >> 7) & 0x01010101) * 0x1B) ^ \
-	    ((Lbafh_v << 1) & 0xFEFEFEFE) ))
-	((# Lbafh_v = t ^ (t >>> 8) ^ (Lbafh_v >>> 8) ^ \
-	    (Lbafh_v >>> 16) ^ (Lbafh_v >>> 24) ))
-	\:
-}
-
-# strip comments (and leading/trailing whitespace if IFS is set) from
-# any file(s) given as argument, or stdin if none, and spew to stdout
-function Lstripcom {
-	\set -o noglob
-	\cat "$@" | while \read _line; do
-		_line=${_line%%#*}
-		[[ -n $_line ]] && \builtin print -r -- $_line
-	done
-}
-
 # give MidnightBSD's laffer1 a bit of csh feeling
 function setenv {
 	if (( $# )); then
@@ -471,28 +284,16 @@ function enable {
 	i_func[nfunc++]=extproc
 
 	# accumulate aliases from dot.mkshrc, in definition order
-	i_alias[nalias]=l; b_alias[nalias++]='ls -F'
-	i_alias[nalias]=la; b_alias[nalias++]='l -a'
-	i_alias[nalias]=ll; b_alias[nalias++]='l -l'
 	i_alias[nalias]=lo; b_alias[nalias++]='l -alo'
 	i_alias[nalias]=doch; b_alias[nalias++]='sudo mksh -c "$(\builtin fc -ln -1)"'
-	i_alias[nalias]=rot13; b_alias[nalias++]='tr abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ nopqrstuvwxyzabcdefghijklmNOPQRSTUVWXYZABCDEFGHIJKLM'
 	i_alias[nalias]=cls; b_alias[nalias++]='\builtin print -n \\ec'
 
 	# accumulate functions from dot.mkshrc, in definition order
-	i_func[nfunc++]=hd
 	i_func[nfunc++]=chpwd
 	i_func[nfunc++]=cd_csh
 	i_func[nfunc++]=dirs
 	i_func[nfunc++]=popd
 	i_func[nfunc++]=pushd
-	i_func[nfunc++]=smores
-	i_func[nfunc++]=Lb64decode
-	i_func[nfunc++]=Lb64encode
-	i_func[nfunc++]=Lbafh_init
-	i_func[nfunc++]=Lbafh_add
-	i_func[nfunc++]=Lbafh_finish
-	i_func[nfunc++]=Lstripcom
 	i_func[nfunc++]=setenv
 	i_func[nfunc++]=enable
 
@@ -586,29 +387,10 @@ function enable {
 
 \: place customisations below this line
 
-for p in ~/.etc/bin ~/bin; do
-	[[ -d $p/. ]] || \continue
-	#XXX OS/2
-	[[ :$PATH: = *:$p:* ]] || PATH=$p:$PATH
-done
+[ -z "$NO_DVTM_AUTO" ] && [ "$TERM" != "linux" ] && [ -z "$DVTM" ] && [ -x $(which dvtm) ] && exec dvtm
 
 \export SHELL=$MKSH MANWIDTH=80 LESSHISTFILE=-
 \alias cls='\builtin print -n \\ec'
-
-#\unset LANGUAGE LC_ADDRESS LC_ALL LC_COLLATE LC_IDENTIFICATION LC_MONETARY \
-#    LC_NAME LC_NUMERIC LC_TELEPHONE LC_TIME
-#p=en_GB.UTF-8
-#\export LANG=C LC_CTYPE=$p LC_MEASUREMENT=$p LC_MESSAGES=$p LC_PAPER=$p
-#\set -U
-
-\unset p
-
-alias ls="ls -h --color=auto"
-alias df="df -h"
-alias du="du -h"
-alias dlesg="dmesg -H"
-alias ssh="TERM=xterm-256color ssh"
-alias emacs="emacs -nw"
 
 \typeset PCOL1=$(tput setaf 3)
 \typeset PCOLR=$(tput sgr0)
@@ -667,6 +449,7 @@ function bashlogic_prompt {
 eval $(dircolors ~/conf/dircolors.256dark)
 
 # locally set stuff like WLANRTL and prompt
+[ -f "$HOME/conf/shell/profile" ] && . "$HOME/conf/shell/profile"
 [ -f "$HOME/conf/local/shrc" ] && . "$HOME/conf/local/shrc"
 
 \: place customisations above this line

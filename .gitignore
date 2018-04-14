@@ -1,4 +1,5 @@
 local
+abs/*/build
 abs/*/*.pkg.*
 abs/*/pkg
 abs/*/src

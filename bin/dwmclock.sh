@@ -44,11 +44,22 @@ Smpd () {
 }
 
 red_shift_h=""
-red_shift_m1="06"
-red_shift_m0="07"
-red_shift_n1="19"
-red_shift_n2="20"
-red_shift_n3="22"
+red_shift_c="
+00:1000
+06:2000
+07:
+19:3000
+20:2000
+21:1000
+"
+red_shift_a() {
+	printf "%s:current\n%s" $red_shift_h "$red_shift_c"\
+	|sort\
+	|cut -d':' -f2\
+	|grep -B1 current\
+	|head -n1
+}
+
 red_shift () {
 	hour=$(date +"%H")
 	if [ x$hour = x$red_shift_h ]; then
@@ -56,23 +67,7 @@ red_shift () {
 	fi
 	red_shift_h=$hour
 
-	if [ $hour -gt $red_shift_n1 ]; then
-		if [ $hour -lt $red_shift_n2 ]; then
-			sct 3000
-		elif [ $hour -lt $red_shift_n3 ]; then
-			sct 2000
-		else
-			sct 1000
-		fi
-	elif [ $hour -le $red_shift_m0 ]; then
-		if [ $hour -le $red_shift_m1 ]; then
-			sct 1000
-		else
-			sct 2000
-		fi
-	else
-		sct
-	fi
+	sct $(red_shift_a)
 }
 
 #super duper luper
@@ -81,8 +76,7 @@ for a in $@; do
 	(type $i >/dev/null 2>&1) && $i
 done
 
-while true
-do
+while true; do
 	# this could be done with a sed and eval
 	# replacing all a with $(S$a) but this seems better
 	# I haven't noticed a slowdown except when I used

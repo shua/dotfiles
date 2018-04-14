@@ -7,4 +7,4 @@ static const char th_colac1[] = "#ff9900";
 static const char th_colac2[] = "#0099ff";
 static const char th_colac3[] = "#cc4400";
 
-static const char th_font[] = "xos4 Terminess Powerline:pixelsize=12:antialias=false:autohint=false";
+static const char th_font[] = "xos4 Terminess Powerline:pixelsize=32:antialias=false:autohint=false";

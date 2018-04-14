@@ -36,8 +36,8 @@ static const Rule rules[] = {
 	{ "Pidgin",   NULL,       NULL,       1 << 7,       0,       -1 },
 	{ "spotify",  NULL,       NULL,       1 << 8,       0,       -1 },
 	{ "Spotify",  NULL,       NULL,       1 << 8,       0,       -1 },
-    { "Spotify",  "Spotify",  NULL,       1 << 8,       0,       -1 },
-    { "Spotify",  "Spotify",  "Spotify",  1 << 8,       0,       -1 },
+	{ "Spotify",  "Spotify",  NULL,       1 << 8,       0,       -1 },
+	{ "Spotify",  "Spotify",  "Spotify",  1 << 8,       0,       -1 },
 	{ "st",       "download", NULL,            0,       1,       -1 },
 };
 
