@@ -14,10 +14,8 @@ makedepends=('git')
 depends=('libxrandr')
 source=('git://git.suckless.org/slock'
         'config.h'
-        'theme.h'
-        'shua.diff')
+        'theme.h')
 sha1sums=('SKIP'
-          'SKIP'
           'SKIP'
           'SKIP')
 
@@ -37,7 +35,6 @@ prepare() {
 		-e 's/CFLAGS =/CFLAGS +=/g' \
 		-e 's/LDFLAGS =/LDFLAGS +=/g' \
 		-i config.mk
-	patch -Np1 -i "$srcdir/shua.diff"
 	cp $srcdir/config.h ./
 	cp $srcdir/theme.h ./
 }

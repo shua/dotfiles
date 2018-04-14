@@ -7,8 +7,6 @@ export CXX="clang++"
 export GOPATH="$HOME/dvl/go"
 #export VIS_PATH="$HOME/conf/vis"
 
-#[[ -r /usr/share/bash-completion/bash_completion ]] && . /usr/share/bash-completion/bash_completion
-
 # overrides/commands
 alias bat="cat /sys/class/power_supply/BAT1/capacity"
 alias dlesg="dmesg -H"

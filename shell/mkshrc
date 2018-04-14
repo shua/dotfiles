@@ -452,4 +452,6 @@ eval $(dircolors ~/conf/dircolors.256dark)
 [ -f "$HOME/conf/shell/profile" ] && . "$HOME/conf/shell/profile"
 [ -f "$HOME/conf/local/shrc" ] && . "$HOME/conf/local/shrc"
 
+bashlogic_prompt
+
 \: place customisations above this line
