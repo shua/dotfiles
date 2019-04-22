@@ -1,85 +1,49 @@
-diff -up a/config.def.h b/config.def.h
---- a/config.def.h	2018-04-14 16:50:05.383654296 -0400
-+++ b/config.def.h	2018-04-14 16:51:44.733270592 -0400
-@@ -82,6 +82,9 @@ char *termname = "st-256color";
+diff -u b/config.def.h c/config.def.h
+--- b/config.def.h	2019-04-22 00:03:53.602045533 -0400
++++ c/config.def.h	2019-04-22 00:03:38.301776880 -0400
+@@ -82,6 +82,9 @@
   */
  unsigned int tabspaces = 8;
  
 +/* bg opacity */
-+unsigned int alpha = 0xcc;
++float alpha = 0.8;
 +
  /* Terminal colors (16 first used in escape sequence) */
  static const char *colorname[] = {
  	/* solarized dark */
-@@ -101,6 +104,8 @@ static const char *colorname[] = {
- 	"#6c71c4",  /* 13: brmagenta*/
- 	"#93a1a1",  /* 14: brcyan   */
- 	"#fdf6e3",  /* 15: brwhite  */
-+	[255] = 0,
-+	"black"
- };
-  
- /* Terminal colors for alternate (light) palette */
-@@ -122,6 +127,8 @@ static const char *altcolorname[] = {
- 	"#6c71c4",  /* 13: brmagenta*/
- 	"#586e75",  /* 14: brcyan   */
- 	"#002b36",  /* 15: brwhite  */
-+	[255] = 0,
-+	"black"
- };
- 
- 
-@@ -130,7 +137,7 @@ static const char *altcolorname[] = {
+@@ -130,7 +133,7 @@
   * foreground, background, cursor, reverse cursor
   */
  unsigned int defaultfg = 12;
 -unsigned int defaultbg = 8;
-+unsigned int defaultbg = 256;
++unsigned int defaultbg = 258;
  static unsigned int defaultcs = 14;
  static unsigned int defaultrcs = 15;
  
-Only in b: config.h
-diff -up a/config.mk b/config.mk
---- a/config.mk	2018-03-20 16:29:59.000000000 -0400
-+++ b/config.mk	2018-04-14 16:50:51.998414097 -0400
-@@ -11,10 +11,10 @@ X11INC = /usr/X11R6/include
- X11LIB = /usr/X11R6/lib
- 
- # includes and libs
--INCS = -I$(X11INC) \
-+INCS = -I. -I/usr/include -I${X11INC} \
-        `pkg-config --cflags fontconfig` \
-        `pkg-config --cflags freetype2`
+diff -u b/config.mk c/config.mk
+--- b/config.mk	2019-04-22 00:03:44.301882232 -0400
++++ c/config.mk	2019-04-22 00:03:38.301776880 -0400
+@@ -16,7 +16,7 @@
+ INCS = -I$(X11INC) \
+        `$(PKG_CONFIG) --cflags fontconfig` \
+        `$(PKG_CONFIG) --cflags freetype2`
 -LIBS = -L$(X11LIB) -lm -lrt -lX11 -lutil -lXft \
-+LIBS = -L/usr/lib -lc -L${X11LIB} -lm -lrt -lX11 -lutil -lXft -lXrender\
-        `pkg-config --libs fontconfig` \
-        `pkg-config --libs freetype2`
++LIBS = -L$(X11LIB) -lm -lrt -lX11 -lutil -lXft -lXrender\
+        `$(PKG_CONFIG) --libs fontconfig` \
+        `$(PKG_CONFIG) --libs freetype2`
  
-diff -up a/st.h b/st.h
---- a/st.h	2018-04-14 16:50:05.384654312 -0400
-+++ b/st.h	2018-04-14 16:52:17.141795537 -0400
-@@ -120,5 +120,6 @@ extern int allowaltscreen;
- extern char *termname;
- extern int usealtcolors;
+diff -u b/st.h c/st.h
+--- b/st.h	2019-04-22 00:03:53.602045533 -0400
++++ c/st.h	2019-04-22 00:03:38.301776880 -0400
+@@ -121,3 +121,4 @@
  extern unsigned int tabspaces;
-+extern unsigned int alpha;
  extern unsigned int defaultfg;
  extern unsigned int defaultbg;
-diff -up a/x.c b/x.c
---- a/x.c	2018-04-14 16:50:05.384654312 -0400
-+++ b/x.c	2018-04-14 16:54:41.607124131 -0400
-@@ -48,6 +48,10 @@ typedef struct {
- #define XK_NO_MOD     0
- #define XK_SWITCH_MOD (1<<13)
- 
-+/* alpha */
-+#define OPAQUE 0Xff
-+#define USE_ARGB (alpha != OPAQUE && opt_embed == NULL)
-+
- /* function definitions used in config.h */
- static void clipcopy(const Arg *);
- static void clippaste(const Arg *);
-@@ -99,6 +103,7 @@ typedef struct {
++extern float alpha;
+diff -u b/x.c c/x.c
+--- b/x.c	2019-04-22 00:03:53.605378925 -0400
++++ c/x.c	2019-04-22 00:03:38.301776880 -0400
+@@ -99,6 +99,7 @@
  	XSetWindowAttributes attrs;
  	int scr;
  	int isfixed; /* is fixed geometry? */
@@ -87,7 +51,15 @@ diff -up a/x.c b/x.c
  	int l, t; /* left and top offset */
  	int gm; /* geometry mask */
  } XWindow;
-@@ -697,7 +702,7 @@ xresize(int col, int row)
+@@ -230,6 +231,7 @@
+ static double usedfontsize = 0;
+ static double defaultfontsize = 0;
+ 
++static char *opt_alpha = NULL;
+ static char *opt_class = NULL;
+ static char **opt_cmd  = NULL;
+ static char *opt_embed = NULL;
+@@ -699,7 +701,7 @@
  
  	XFreePixmap(xw.dpy, xw.buf);
  	xw.buf = XCreatePixmap(xw.dpy, xw.win, win.w, win.h,
@@ -96,96 +68,60 @@ diff -up a/x.c b/x.c
  	XftDrawChange(xw.draw, xw.buf);
  	xclear(0, 0, win.w, win.h);
  
-@@ -762,6 +767,13 @@ xloadcols(void)
+@@ -764,6 +766,13 @@
  			else
- 				die("Could not allocate color %d\n", i);
+ 				die("could not allocate color %d\n", i);
  		}
 +
 +	/* set alpha value of bg color */
-+	if (USE_ARGB) {
-+		dc.col[defaultbg].color.alpha = (0xffff * alpha) / OPAQUE;
-+		dc.col[defaultbg].pixel &= 0x00111111;
-+		dc.col[defaultbg].pixel |= alpha << 24;
-+	}
++	if (opt_alpha)
++		alpha = strtof(opt_alpha, NULL);
++	dc.col[defaultbg].color.alpha = (unsigned short)(0xffff * alpha);
++	dc.col[defaultbg].pixel &= 0x00FFFFFF;
++	dc.col[defaultbg].pixel |= (unsigned char)(0xff * alpha) << 24;
  	loaded = 1;
  }
  
-@@ -783,6 +795,17 @@ xsetcolorname(int x, const char *name)
- 	return 0;
- }
+@@ -1020,11 +1029,23 @@
+ 	Window parent;
+ 	pid_t thispid = getpid();
+ 	XColor xmousefg, xmousebg;
++	XWindowAttributes attr;
++	XVisualInfo vis;
  
-+void
-+xtermclear(int col1, int row1, int col2, int row2)
-+{
-+	XftDrawRect(xw.draw,
-+			&dc.col[IS_SET(MODE_REVERSE) ? defaultfg : defaultbg],
-+			borderpx + col1 * win.cw,
-+			borderpx + row1 * win.ch,
-+			(col2-col1+1) * win.cw,
-+			(row2-row1+1) * win.ch);
-+}
-+
- /*
-  * Absolute coordinates.
-  */
-@@ -1021,7 +1044,40 @@ xinit(int cols, int rows)
  	if (!(xw.dpy = XOpenDisplay(NULL)))
- 		die("Can't open display\n");
+ 		die("can't open display\n");
  	xw.scr = XDefaultScreen(xw.dpy);
 -	xw.vis = XDefaultVisual(xw.dpy, xw.scr);
-+	xw.depth = (USE_ARGB) ? 32: XDefaultDepth(xw.dpy, xw.scr);
-+	if (!USE_ARGB)
-+		xw.vis = XDefaultVisual(xw.dpy, xw.scr);
-+	else {
-+		XVisualInfo *vis;
-+		XRenderPictFormat *fmt;
-+		int nvi;
-+		int i;
 +
-+		XVisualInfo tpl = {
-+			.screen = xw.scr,
-+			.depth = 32,
-+			.class = TrueColor
-+		};
-+
-+		vis = XGetVisualInfo(xw.dpy,
-+				VisualScreenMask | VisualDepthMask | VisualClassMask,
-+				&tpl, &nvi);
-+		xw.vis = NULL;
-+		for (i = 0; i < nvi; i++) {
-+			fmt = XRenderFindVisualFormat(xw.dpy, vis[i].visual);
-+			if (fmt->type == PictTypeDirect && fmt->direct.alphaMask) {
-+				xw.vis = vis[i].visual;
-+				break;
-+			}
-+		}
-+
-+		XFree(vis);
-+
-+		if (!xw.vis) {
-+			fprintf(stderr, "Couldn't find ARGB visual.\n");
-+			exit(1);
-+		}
++	if (!(opt_embed && (parent = strtol(opt_embed, NULL, 0)))) {
++		parent = XRootWindow(xw.dpy, xw.scr);
++		xw.depth = 32;
++	} else {
++		XGetWindowAttributes(xw.dpy, parent, &attr);
++		xw.depth = attr.depth;
 +	}
++
++	XMatchVisualInfo(xw.dpy, xw.scr, xw.depth, TrueColor, &vis);
++	xw.vis = vis.visual;
  
  	/* font */
  	if (!FcInit())
-@@ -1031,7 +1087,11 @@ xinit(int cols, int rows)
+@@ -1034,7 +1055,7 @@
  	xloadfonts(usedfont, 0);
  
  	/* colors */
 -	xw.cmap = XDefaultColormap(xw.dpy, xw.scr);
-+	if (!USE_ARGB)
-+		xw.cmap = XDefaultColormap(xw.dpy, xw.scr);
-+	else
-+		xw.cmap = XCreateColormap(xw.dpy, XRootWindow(xw.dpy, xw.scr),
-+				xw.vis, None);
++	xw.cmap = XCreateColormap(xw.dpy, parent, xw.vis, None);
  	xloadcols();
  
  	/* adjust fixed window geometry */
-@@ -1054,16 +1114,15 @@ xinit(int cols, int rows)
- 	if (!(opt_embed && (parent = strtol(opt_embed, NULL, 0))))
- 		parent = XRootWindow(xw.dpy, xw.scr);
+@@ -1054,19 +1075,15 @@
+ 		| ButtonMotionMask | ButtonPressMask | ButtonReleaseMask;
+ 	xw.attrs.colormap = xw.cmap;
+ 
+-	if (!(opt_embed && (parent = strtol(opt_embed, NULL, 0))))
+-		parent = XRootWindow(xw.dpy, xw.scr);
  	xw.win = XCreateWindow(xw.dpy, parent, xw.l, xw.t,
 -			win.w, win.h, 0, XDefaultDepth(xw.dpy, xw.scr), InputOutput,
 +			win.w, win.h, 0, xw.depth, InputOutput,
@@ -199,8 +135,17 @@ diff -up a/x.c b/x.c
 -	xw.buf = XCreatePixmap(xw.dpy, xw.win, win.w, win.h,
 -			DefaultDepth(xw.dpy, xw.scr));
 +	xw.buf = XCreatePixmap(xw.dpy, xw.win, win.w, win.h, xw.depth);
-+	dc.gc = XCreateGC(xw.dpy, (USE_ARGB) ? xw.buf: parent,
-+			GCGraphicsExposures, &gcvalues);
++	dc.gc = XCreateGC(xw.dpy, xw.buf, GCGraphicsExposures, &gcvalues);
  	XSetForeground(xw.dpy, dc.gc, dc.col[defaultbg].pixel);
  	XFillRectangle(xw.dpy, xw.buf, dc.gc, 0, 0, win.w, win.h);
  
+@@ -1910,6 +1927,9 @@
+ 	case 'a':
+ 		allowaltscreen = 0;
+ 		break;
++	case 'A':
++		opt_alpha = EARGF(usage());
++		break;
+ 	case 'c':
+ 		opt_class = EARGF(usage());
+ 		break;
