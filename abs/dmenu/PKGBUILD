@@ -1,27 +1,30 @@
-# $Id: PKGBUILD 146421 2015-11-09 10:39:26Z spupykin $
-# Maintainer:  Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
 # Contributor: Bartłomiej Piotrowski <bpiotrowski@archlinux.org>
 # Contributor: Thorsten Töpper <atsutane-tu@freethoughts.de>
 # Contributor: Thayer Williams <thayer@archlinux.org>
 # Contributor: Jeff 'codemac' Mickey <jeff@archlinux.org>
 
 pkgname=dmenu
-pkgver=4.7
+pkgver=4.9
 pkgrel=1
-pkgdesc="A generic menu for X"
-url="http://tools.suckless.org/dmenu/"
-arch=('i686' 'x86_64')
+pkgdesc='Generic menu for X'
+url='https://tools.suckless.org/dmenu/'
+arch=('x86_64')
 license=('MIT')
 depends=('sh' 'libxinerama' 'libxft' 'freetype2')
-source=("http://dl.suckless.org/tools/dmenu-$pkgver.tar.gz"
+source=(https://dl.suckless.org/tools/dmenu-${pkgver}.tar.gz
         "config.h"
         "theme.h")
-md5sums=('57b5c28f7e3de908f5e5c2a65cd72e16'
+md5sums=('SKIP'
          'SKIP'
          'SKIP')
 
 prepare() {
   cd $pkgname-$pkgver
+  echo "CPPFLAGS+=${CPPFLAGS}" >> config.mk
+  echo "CFLAGS+=${CFLAGS}" >> config.mk
+  echo "LDFLAGS+=${LDFLAGS}" >> config.mk
   cp $srcdir/config.h ./
   cp $srcdir/theme.h ./
 }
@@ -34,5 +37,5 @@ build() {
 package() {
   cd $pkgname-$pkgver
   make PREFIX=/usr DESTDIR="$pkgdir" install
-  install -Dm644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }

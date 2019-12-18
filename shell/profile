@@ -1,13 +1,24 @@
-export PATH=$HOME/bin:$PATH:$HOME/dvl/go/bin
-export EDITOR="vis"
-export BROWSER="web"
-export CC="clang"
-export CPP="clang -E"
-export CXX="clang++"
-export GOPATH="$HOME/dvl/go"
-#export VIS_PATH="$HOME/conf/vis"
+if [ -z "$PROFILE_SOURCED" ]; then
+	export PATH=$HOME/bin:$HOME/.local/bin:$HOME/.cargo/bin:$PATH
+	export EDITOR=vis
+	export BROWSER=firefox
+	export CC=clang
+	export CPP="clang -E"
+	export CXX="clang++"
+	#export GOPATH="$HOME/dvl/go"
+	#export VIS_PATH="$HOME/conf/vis"
+	export PLAN9=/home/shua/src/plan9port
+	export PATH=$PATH:$PLAN9/bin
+	export GIMP2_DIRECTORY=$HOME/.config/gimp
+	export GNUPGHOME=$HOME/.config/gnupg
+	export PROFILE_SOURCED=1
+
+	# OPAM configuration
+	. /home/shua/.config/opam/opam-init/init.sh > /dev/null 2> /dev/null || true
+fi
 
 # overrides/commands
+alias sway="sway -d 2>$HOME/.log/sway"
 alias bat="cat /sys/class/power_supply/BAT1/capacity"
 alias dlesg="dmesg -H"
 alias doch='sudo mksh -c "$(fc -ln -1)"'
@@ -25,13 +36,21 @@ alias la="ls -a"
 
 alias E="$EDITOR"
 
+alias ga="git add"
 alias gau="git add -u"
 alias gb="git branch"
 alias gc="git commit"
 alias gch="git checkout"
 alias gd="git diff"
 alias gdH="git diff HEAD"
-alias gdm="git diff master"
+alias gg="git grep"
+alias gl="git lol"
+alias gla="git lola"
 alias gp="git pull --rebase"
 alias gs="git status"
+
+alias rust-musl-builder='docker run --rm -it -v "$(pwd)":/home/rust/src ekidd/rust-musl-builder'
+
+echo sourced profile
+echo PATH is $PATH
 

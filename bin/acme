@@ -1,0 +1,7 @@
+PATH="$HOME/bin/acme.d:$PATH"
+TERM=dumb
+SHELL=rc
+PAGER=nobs
+
+9 acme -f "/mnt/font/Noto Sans Display Medium/12a/font"
+
