@@ -1,29 +1,65 @@
-if [ -z "$PROFILE_SOURCED" ]; then
-	export PATH=$HOME/bin:$HOME/.local/bin:$HOME/.cargo/bin:$PATH
-	export EDITOR=vis
-	export BROWSER=firefox
-	export CC=clang
-	export CPP="clang -E"
-	export CXX="clang++"
-	#export GOPATH="$HOME/dvl/go"
-	#export VIS_PATH="$HOME/conf/vis"
-	export PLAN9=/home/shua/src/plan9port
-	export PATH=$PATH:$PLAN9/bin
-	export GIMP2_DIRECTORY=$HOME/.config/gimp
-	export GNUPGHOME=$HOME/.config/gnupg
-	export PROFILE_SOURCED=1
+prepend_path() {
+	case ":$PATH:" in
+	*:"$1":*) ;;
+	*:"$1")   ;;
+	"$1":*)   ;;
+	*)        PATH="$1${PATH:+:$PATH}"
+	esac
+}
+append_path() {
+	case ":$PATH:" in
+	*:"$1":*) ;;
+	*:"$1")   ;;
+	"$1":*)   ;;
+	*)        PATH="${PATH:+$PATH:}$1"
+	esac
+}
+purge_path() {
+	case ":$PATH:" in
+	*:"$1":*) PATH="${PATH/:$1}";;
+	*:"$1")   PATH="${PATH/:$1}";;
+	"$1":*)   PATH="${PATH/$1:}";;
+	esac
+}
 
-	# OPAM configuration
-	. /home/shua/.config/opam/opam-init/init.sh > /dev/null 2> /dev/null || true
-fi
+purge_path "/usr/bin/site_perl"
+purge_path "/usr/bin/vendor_perl"
+purge_path "/usr/bin/core_perl"
+purge_path "$HOME/.nix-profile/bin"
+purge_path $HOME/.config/opam/*/bin
+prepend_path "$HOME/bin"
+prepend_path "$HOME/.local/bin"
+append_path "$HOME/.cargo/bin"
+append_path "$HOME/.elan/bin"
+append_path "$HOME/.krew/bin"
+
+export EDITOR=amp
+export BROWSER=firefox
+export CC=clang
+export CPP="clang -E"
+export CXX="clang++"
+export PLAN9=/home/shua/src/plan9port
+export GIMP2_DIRECTORY=$HOME/.config/gimp
+export GNUPGHOME=$HOME/.config/gnupg
+
+append_path "$PLAN9/bin"
+
+UNTARNISHED_PATH=$PATH
+. $HOME/.config/opam/opam-init/init.sh > /dev/null 2> /dev/null || true
+. $HOME/.nix-profile/etc/profile.d/nix.sh || true
+PATH=$UNTARNISHED_PATH
+unset UNTARNISHED_PATH
+prepend_path $HOME/.config/opam/*/bin
+prepend_path "$HOME/.nix-profile/bin"
 
 # overrides/commands
 alias sway="sway -d 2>$HOME/.log/sway"
-alias bat="cat /sys/class/power_supply/BAT1/capacity"
+alias battery='cat /sys/class/power_supply/BAT1/{status,capacity} |paste - - |awk '"'"'{ if ($1 ~ /Charging/) {printf "+" } print $2"%" }'"'"
 alias dlesg="dmesg -H"
 alias doch='sudo mksh -c "$(fc -ln -1)"'
 alias ssh="TERM=xterm-256color ssh"
 alias emacs="emacs -nw"
+alias printlast='fc -ln -1 | awk '"'"'{sub(/^[ \t]*/, ""); print }'"'"
 
 # shorthands
 alias df="df -h"
@@ -40,7 +76,7 @@ alias ga="git add"
 alias gau="git add -u"
 alias gb="git branch"
 alias gc="git commit"
-alias gch="git checkout"
+alias gco="git checkout"
 alias gd="git diff"
 alias gdH="git diff HEAD"
 alias gg="git grep"
@@ -51,6 +87,11 @@ alias gs="git status"
 
 alias rust-musl-builder='docker run --rm -it -v "$(pwd)":/home/rust/src ekidd/rust-musl-builder'
 
-echo sourced profile
-echo PATH is $PATH
+alias wasabi='aws --endpoint-url https://s3.us-east-2.wasabisys.com --profile wasabi-jdll s3'
 
+echo sourced profile
+echo PATH is $(echo "$PATH" |tr ':' ' ')
+
+unset -f append_path
+unset -f prepend_path
+unset -f purge_path

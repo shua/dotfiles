@@ -16,15 +16,14 @@ Impd () {
 
 # status getters
 Snet () {
-	#ssid=$(wpa_cli list_networks |grep CURRENT |cut -f2)
 	ssid=$(iwctl station wlan0 get-networks |sed 's/\x1b\[[0-9;]*[a-zA-Z]//g' |awk '/ *>/{print $2}')
-	addr="$((ip a |grep "inet " |grep -v "127.0.0.1") >/dev/null 2>&1 && echo "+" || echo "")"
+	addr="$((ip a |grep "inet " |grep -v "127.0.0.1" -q) && echo + || echo)"
 	echo "$addr$ssid"
 }
 
 Smute () {
-    if [ -n "$(amixer sget Master | grep off)" ]; then
-        echo "M"
+	if [ -n "$(amixer sget Master | grep off)" ]; then
+		echo "M"
 	fi
 }
 
@@ -32,7 +31,7 @@ Sbat () {
 	cap="$(cat /sys/class/power_supply/BAT1/capacity)"
 	status="$(cat /sys/class/power_supply/BAT1/status)"
 
-	[ "$status" = "Discharging" ] || printf '+'
+	[ "$status" = Discharging ] || printf '+'
 	printf '%d%%\n' "$cap"
 }
 
@@ -59,16 +58,16 @@ red_shift_c="
 21:1000
 "
 red_shift_a() {
-	printf "%s:current\n%s" $red_shift_h "$red_shift_c"\
-	|sort\
-	|cut -d':' -f2\
-	|grep -B1 current\
+	printf "%s:current\n%s" $red_shift_h "$red_shift_c" \
+	|sort \
+	|cut -d':' -f2 \
+	|grep -B1 current \
 	|head -n1
 }
 
-red_shift () {
+red_shift() {
 	hour=$(date +"%H")
-	if [ x$hour = x$red_shift_h ]; then
+	if [ "$hour" = "$red_shift_h" ]; then
 		return
 	fi
 	red_shift_h=$hour
@@ -76,29 +75,59 @@ red_shift () {
 	sct $(red_shift_a)
 }
 
-#super duper luper
+json=""
+if [ "$1" = "-j" ]; then
+	shift
+	json=1
+fi
+
+# Initialize
 for a in $@; do
 	i="I$a"
 	(type $i >/dev/null 2>&1) && $i
 done
+if [ "$json" = 1 ]; then printf '{"version": 1, "click_events": true, "cont_signal": 18, "stop_signal": 19}\n'; fi
 
-while true; do
-	# this could be done with a sed and eval
-	# replacing all a with $(S$a) but this seems better
-	# I haven't noticed a slowdown except when I used
-	# type "S$a" so I don't use that
-	stat=""
-	for a in $@; do
-		s="S$a"
-		sret="$($s)"
-		if [ $? -eq 0 ]; then
-			[ -n "$sret" ] && stat="${stat} ${sret}"
-		else
-			stat="${stat} $a"
-		fi
+loop() {
+	# Loop and collect statuses
+	if [ "$json" = 1 ]; then printf '[\n'; fi
+	while true; do
+		# this could be done with a sed and eval
+		# replacing all a with $(S$a) but this seems better
+		# I haven't noticed a slowdown except when I used
+		# type "S$a" so I don't use that
+		stat=""
+		for a in $@; do
+			sret="$(S$a)"
+			if [ $? -ne 0 ]; then
+				sret="$a"
+			fi
+			if [ "$json" = 1 ]; then
+				if [ -n "$stat" ]; then
+					stat="$stat,"
+				else
+					stat=$(printf '\t[')
+				fi
+				stat=$(printf '%s\n\t\t{"full_text": "%s", "name": "%s"}' "$stat" "$sret" "$a")
+			else
+				stat="$stat $sret"
+			fi
+		done
+		echo "$stat"
+		if [ "$json" = 1 ]; then printf '\n\t],\n'; fi
+		red_shift
+		sleep 5s
 	done
-	echo "${stat}"
-	red_shift
-    sleep 5s;
-done
+	if [ "$json" = 1 ]; then printf '\n]\n'; fi
+}
+
+handle_events() {
+	read ev
+	echo "$ev" >>/home/shua/events.log
+}
+
+trap loop CONT
+trap handle_events STOP
+
+loop "$@"
 

@@ -5,26 +5,26 @@ arg0=$0
 
 gen() {
 	nameslist='http://unicode.org/Public/9.0.0/ucd/NamesList.txt'
-	
+
 	uniglyph() {
 		case $1 in
 		00[0-7][0-9A-F])
 			n=$(printf "%02x" 0x$1)
-			g=$(printf "\x$n") 
+			g=$(printf "\x$n")
 			;;
 		[0-7A-F][0-7A-F][0-7A-F][0-7A-F])
-			g=$(printf "\u$1") 
+			g=$(printf "\u$1")
 			;;
 		*)
 			n=$(printf "%08x" 0x$1)
-			g=$(printf "\U$n") 
+			g=$(printf "\U$n")
 			;;
 		esac
 	#	g=$(echo "\u$1");
 		shift;
 		echo "$g" $@;
 	}
-	
+
 	curl "$nameslist" \
 		|grep "^[0-9A-F]"  |grep -v "<*>" \
 		|(while read l; do uniglyph $l; done) >$uniglyphs
@@ -48,7 +48,7 @@ sel)
 	sel
 	;;
 *)
-	sel |xsel -b
+	sel |wl-copy
 	;;
 esac
 
