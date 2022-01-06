@@ -37,7 +37,7 @@ sel() {
 		exit
 	fi
 
-	cat $uniglyphs |dmenu -b -i -l 10 -fn "monospace:size=16" |cut -d' ' -f1 -z
+	cat $uniglyphs |bemenu -i -l 10 -fn "monospace:size=16" |awk '{printf "%s", $1}'
 }
 
 case $1 in
@@ -48,7 +48,7 @@ sel)
 	sel
 	;;
 *)
-	sel |wl-copy
+	sel |wl-copy -t 'text/plain'
 	;;
 esac
 

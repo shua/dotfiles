@@ -1,7 +1,8 @@
 [user]
     name = shua
     email = itis@isthisa.email
-    signingkey = 8A388FA5
+    # signingkey = 8A388FA5
+    signingkey = 7055770F
 [push]
     default = simple
 [alias]

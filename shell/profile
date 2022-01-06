@@ -33,7 +33,7 @@ append_path "$HOME/.cargo/bin"
 append_path "$HOME/.elan/bin"
 append_path "$HOME/.krew/bin"
 
-export EDITOR=amp
+export EDITOR=nvim
 export BROWSER=firefox
 export CC=clang
 export CPP="clang -E"
@@ -41,6 +41,8 @@ export CXX="clang++"
 export PLAN9=/home/shua/src/plan9port
 export GIMP2_DIRECTORY=$HOME/.config/gimp
 export GNUPGHOME=$HOME/.config/gnupg
+# not ready yet
+# export MOZ_ENABLE_WAYLAND=1
 
 append_path "$PLAN9/bin"
 
@@ -88,6 +90,8 @@ alias gs="git status"
 alias rust-musl-builder='docker run --rm -it -v "$(pwd)":/home/rust/src ekidd/rust-musl-builder'
 
 alias wasabi='aws --endpoint-url https://s3.us-east-2.wasabisys.com --profile wasabi-jdll s3'
+
+tmux source ~/.config/tmux/tmux.conf
 
 echo sourced profile
 echo PATH is $(echo "$PATH" |tr ':' ' ')
