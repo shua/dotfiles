@@ -10,7 +10,7 @@ if [ -n "$1" ]; then
         exit
     fi
 else
-    wp=~/pic/wp/$(ls ~/pic/wp/ |shuf |tail -n1)
+    wp=~/pic/wp/$(ls ~/pic/wp/ |shuf |head -n1)
 fi
 
 swaymsg "output * bg $wp fill"

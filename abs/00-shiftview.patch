@@ -1,0 +1,74 @@
+From 465c27f184a5527ed0b37ca1ffbd80e0a4a84991 Mon Sep 17 00:00:00 2001
+From: Guido Cella <guido@guidocella.xyz>
+Date: Sat, 17 Apr 2021 09:00:53 +0200
+Subject: [PATCH] Port shiftview
+
+---
+ config.def.h |  4 ++++
+ shiftview.c  | 35 +++++++++++++++++++++++++++++++++++
+ 2 files changed, 39 insertions(+)
+ create mode 100644 shiftview.c
+
+diff --git a/config.def.h b/config.def.h
+index 84086594..2b5a4ef4 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -65,6 +65,8 @@ static const int natural_scrolling = 0;
+ static const char *termcmd[] = { "alacritty", NULL };
+ static const char *menucmd[] = { "bemenu-run", NULL };
+ 
++#include "shiftview.c"
++
+ static const Key keys[] = {
+ 	/* Note that Shift changes certain key codes: c -> C, 2 -> at, etc. */
+ 	/* modifier                  key                 function        argument */
+@@ -78,6 +80,8 @@ static const Key keys[] = {
+ 	{ MODKEY,                    XKB_KEY_l,          setmfact,       {.f = +0.05} },
+ 	{ MODKEY,                    XKB_KEY_Return,     zoom,           {0} },
+ 	{ MODKEY,                    XKB_KEY_Tab,        view,           {0} },
++	{ MODKEY,                    XKB_KEY_a,          shiftview,      { .i = -1 } },
++	{ MODKEY,                    XKB_KEY_semicolon,  shiftview,      { .i = 1 } },
+ 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_C,          killclient,     {0} },
+ 	{ MODKEY,                    XKB_KEY_t,          setlayout,      {.v = &layouts[0]} },
+ 	{ MODKEY,                    XKB_KEY_f,          setlayout,      {.v = &layouts[1]} },
+diff --git a/shiftview.c b/shiftview.c
+new file mode 100644
+index 00000000..7710c882
+--- /dev/null
++++ b/shiftview.c
+@@ -0,0 +1,35 @@
++// "arg->i" stores the number of tags to shift right (positive value)
++//          or left (negative value)
++void
++shiftview(const Arg *arg)
++{
++	Arg a;
++	Client *c;
++	size_t ntags = LENGTH(tags);
++	bool visible = false;
++	int i = arg->i;
++	int count = 0;
++	int nextseltags, curseltags = selmon->tagset[selmon->seltags];
++
++	do {
++		if (i > 0) // left circular shift
++			nextseltags = (curseltags << i) | (curseltags >> (ntags - i));
++		else // right circular shift
++			nextseltags = curseltags >> (- i) | (curseltags << (ntags + i));
++
++		// Check if the tag is visible
++		wl_list_for_each(c, &clients, link) {
++			if (nextseltags & c->tags) {
++				visible = true;
++				break;
++			}
++		}
++
++		i += arg->i;
++	} while (!visible && ++count <= ntags);
++
++	if (count <= ntags) {
++		a.i = nextseltags;
++		view(&a);
++	}
++}

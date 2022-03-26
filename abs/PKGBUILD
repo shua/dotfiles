@@ -1,0 +1,45 @@
+# Maintainer: Devin J. Pohly <djpohly+arch@gmail.com>
+pkgname=dwl-git
+pkgver=0.3.r33.7018ed9
+pkgrel=1
+pkgdesc="Simple, hackable dynamic tiling Wayland compositor (dwm for Wayland)"
+arch=('x86_64')
+url="https://github.com/djpohly/dwl"
+license=('GPL')
+depends=('wlroots>=0.13')
+makedepends=('git' 'wayland-protocols')
+optdepends=('xorg-xwayland: for XWayland support')
+provides=("${pkgname%-git}")
+conflicts=("${pkgname%-git}")
+# append #branch=wlroots-next to build against wlroots-git
+source=('git+https://github.com/djpohly/dwl#branch=wlroots-next'
+        config.h
+        00-altkbd.patch
+        00-shiftview.patch
+        00-smartborders.patch)
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
+
+prepare() {
+	cd "$srcdir/${pkgname%-git}"
+	cp "$srcdir/config.h" config.h
+	cp "$srcdir"/*.patch ./
+	# Uncomment to compile with XWayland support
+	sed -i -e '/-DXWAYLAND/s/^#//' config.mk
+	rm -f shiftview.c
+	git apply *.patch
+}
+
+pkgver() {
+	cd "$srcdir/${pkgname%-git}"
+	printf "%s" "$(git describe --long | sed 's/^v//;s/\([^-]*-\)g/r\1/;s/-/./g')"
+}
+
+build() {
+	cd "$srcdir/${pkgname%-git}"
+	make
+}
+
+package() {
+	cd "$srcdir/${pkgname%-git}"
+	make PREFIX="$pkgdir/usr/" install
+}
