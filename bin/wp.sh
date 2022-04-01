@@ -13,5 +13,6 @@ else
     wp=~/pic/wp/$(ls ~/pic/wp/ |shuf |head -n1)
 fi
 
-swaymsg "output * bg $wp fill"
+# swaymsg "output * bg $wp fill"
+swaybg -i $wp -m fill
 

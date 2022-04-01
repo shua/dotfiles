@@ -42,7 +42,7 @@ export PLAN9=/home/shua/src/plan9port
 export GIMP2_DIRECTORY=$HOME/.config/gimp
 export GNUPGHOME=$HOME/.config/gnupg
 # not ready yet
-# export MOZ_ENABLE_WAYLAND=1
+export MOZ_ENABLE_WAYLAND=1
 
 append_path "$PLAN9/bin"
 

@@ -1,18 +1,18 @@
-From 140fdfa15d4a42ed7952308a03024ff165fb996b Mon Sep 17 00:00:00 2001
+From 97fb45c694eff13862a9229e6de3bc4a5f8e609a Mon Sep 17 00:00:00 2001
 From: shua <itis@isthisa.email>
-Date: Fri, 25 Mar 2022 21:01:26 -0400
-Subject: [PATCH] cycle through keymaps
+Date: Fri, 1 Apr 2022 18:37:56 -0400
+Subject: [PATCH] altkbd
 
 ---
- config.def.h |  9 +++++----
+ config.def.h | 10 +++++-----
  dwl.c        | 23 ++++++++++++++++++++++-
- 2 files changed, 27 insertions(+), 5 deletions(-)
+ 2 files changed, 27 insertions(+), 6 deletions(-)
 
 diff --git a/config.def.h b/config.def.h
-index 9bdf8b5..039c146 100644
+index 00f6a85..59a8374 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -38,12 +38,13 @@ static const MonitorRule monrules[] = {
+@@ -38,13 +38,13 @@ static const MonitorRule monrules[] = {
  };
  
  /* keyboard */
@@ -24,12 +24,13 @@ index 9bdf8b5..039c146 100644
 -	.options = "ctrl:nocaps",
 +	{ .options = "ctrl:nocaps", }
  	*/
+-	.options = "",
 -};
 +} };
  
  static const int repeat_rate = 25;
  static const int repeat_delay = 600;
-@@ -84,7 +85,7 @@ static const Key keys[] = {
+@@ -85,7 +85,7 @@ static const Key keys[] = {
  	{ MODKEY,                    XKB_KEY_t,          setlayout,      {.v = &layouts[0]} },
  	{ MODKEY,                    XKB_KEY_f,          setlayout,      {.v = &layouts[1]} },
  	{ MODKEY,                    XKB_KEY_m,          setlayout,      {.v = &layouts[2]} },
@@ -39,10 +40,10 @@ index 9bdf8b5..039c146 100644
  	{ MODKEY,                    XKB_KEY_e,         togglefullscreen, {0} },
  	{ MODKEY,                    XKB_KEY_0,          view,           {.ui = ~0} },
 diff --git a/dwl.c b/dwl.c
-index 3f66be4..c96888f 100644
+index ac62120..36523c2 100644
 --- a/dwl.c
 +++ b/dwl.c
-@@ -236,6 +236,7 @@ static void motionabsolute(struct wl_listener *listener, void *data);
+@@ -252,6 +252,7 @@ static void motionabsolute(struct wl_listener *listener, void *data);
  static void motionnotify(uint32_t time);
  static void motionrelative(struct wl_listener *listener, void *data);
  static void moveresize(const Arg *arg);
@@ -50,7 +51,7 @@ index 3f66be4..c96888f 100644
  static void outputmgrapply(struct wl_listener *listener, void *data);
  static void outputmgrapplyortest(struct wlr_output_configuration_v1 *config, int test);
  static void outputmgrtest(struct wl_listener *listener, void *data);
-@@ -308,6 +309,7 @@ static struct wl_list keyboards;
+@@ -326,6 +327,7 @@ static struct wl_list keyboards;
  static unsigned int cursor_mode;
  static Client *grabc;
  static int grabcx, grabcy; /* client-relative */
@@ -58,7 +59,7 @@ index 3f66be4..c96888f 100644
  
  static struct wlr_output_layout *output_layout;
  static struct wlr_box sgeom;
-@@ -654,7 +656,7 @@ createkeyboard(struct wlr_keyboard *keyboard)
+@@ -802,7 +804,7 @@ createkeyboard(struct wlr_input_device *device)
  
  	/* Prepare an XKB keymap and assign it to the keyboard. */
  	context = xkb_context_new(XKB_CONTEXT_NO_FLAGS);
@@ -66,8 +67,8 @@ index 3f66be4..c96888f 100644
 +	keymap = xkb_keymap_new_from_names(context, xkb_rules,
  		XKB_KEYMAP_COMPILE_NO_FLAGS);
  
- 	wlr_keyboard_set_keymap(keyboard, keymap);
-@@ -1372,6 +1374,25 @@ moveresize(const Arg *arg)
+ 	wlr_keyboard_set_keymap(device->keyboard, keymap);
+@@ -1524,6 +1526,25 @@ moveresize(const Arg *arg)
  	}
  }
  
@@ -82,7 +83,7 @@ index 3f66be4..c96888f 100644
 +		struct xkb_context *context = xkb_context_new(XKB_CONTEXT_NO_FLAGS);
 +		struct xkb_keymap *keymap = xkb_map_new_from_names(context, xkb_rule,
 +				XKB_KEYMAP_COMPILE_NO_FLAGS);
-+		wlr_keyboard_set_keymap(kb->wlr_keyboard, keymap);
++		wlr_keyboard_set_keymap(kb->device->keyboard, keymap);
 +		xkb_keymap_unref(keymap);
 +		xkb_context_unref(context);
 +	}
