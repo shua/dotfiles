@@ -1,6 +1,6 @@
 # Maintainer: Devin J. Pohly <djpohly+arch@gmail.com>
 pkgname=dwl-git
-pkgver=0.3.r28.4d3adea
+pkgver=0.3.r31.437aea8
 pkgrel=1
 pkgdesc="Simple, hackable dynamic tiling Wayland compositor (dwm for Wayland)"
 arch=('x86_64')
@@ -15,9 +15,10 @@ conflicts=("${pkgname%-git}")
 source=('git+https://github.com/djpohly/dwl'
         config.h
         00-altkbd.patch
+        00-print-appid.patch
         00-shiftview.patch
         00-smartborders.patch)
-sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
 
 prepare() {
 	cd "$srcdir/${pkgname%-git}"

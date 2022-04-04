@@ -1,0 +1,24 @@
+From 3f6e534f5379913af7a98505fdc567868fb92ad4 Mon Sep 17 00:00:00 2001
+From: shua <itis@isthisa.email>
+Date: Sun, 3 Apr 2022 19:55:31 -0400
+Subject: [PATCH] print appid
+
+---
+ dwl.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/dwl.c b/dwl.c
+index 24d015f..ad68cef 100644
+--- a/dwl.c
++++ b/dwl.c
+@@ -462,6 +462,7 @@ applyrules(Client *c)
+ 		appid = broken;
+ 	if (!(title = client_get_title(c)))
+ 		title = broken;
++	printf("debug appid %s title %s\n", appid, title);
+ 
+ 	for (r = rules; r < END(rules); r++) {
+ 		if ((!r->title || strstr(title, r->title))
+-- 
+2.35.1
+
