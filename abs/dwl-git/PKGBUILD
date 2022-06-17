@@ -1,6 +1,6 @@
 # Maintainer: Devin J. Pohly <djpohly+arch@gmail.com>
 pkgname=dwl-git
-pkgver=0.3.r31.437aea8
+pkgver=0.3.1.r38.4ae6d0f
 pkgrel=1
 pkgdesc="Simple, hackable dynamic tiling Wayland compositor (dwm for Wayland)"
 arch=('x86_64')
@@ -25,7 +25,7 @@ prepare() {
 	cp "$srcdir/config.h" config.h
 	cp "$srcdir"/*.patch ./
 	# Uncomment to compile with XWayland support
-	sed -i -e '/-DXWAYLAND/s/^#//' config.mk
+	sed -i -e '/-DXWAYLAND/s/^#//; /XLIBS = xcb/s/^#//' config.mk
 	rm -f shiftview.c
 	git apply *.patch
 }
