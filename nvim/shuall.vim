@@ -74,7 +74,7 @@ hi Search         ctermfg=yellow   ctermbg=black cterm=NONE
 hi IncSearch      ctermfg=yellow   ctermbg=black cterm=NONE
 
 hi Visual         ctermbg=white
-hi Pmenu          ctermfg=black    ctermbg=grey   cterm=NONE
+hi Pmenu          ctermfg=grey     ctermbg=black cterm=NONE
 hi PmenuSel       ctermfg=black    ctermbg=yellow cterm=NONE
-
+hi WinSeparator   cterm=NONE
 

@@ -41,6 +41,9 @@ sel() {
 }
 
 case $1 in
+-h|help)
+	printf "usage: uniglyph [gen|sel]\n"
+	;;
 gen)
 	gen
 	;;
