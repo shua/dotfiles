@@ -2,10 +2,12 @@
 static const int sloppyfocus        = 1;  /* focus follows mouse */
 static const unsigned int borderpx  = 1;  /* border pixel of windows */
 static const int lockfullscreen     = 1;  /* 1 will force focus on the fullscreen window */
+static const int smartborders       = 1;
 static const float rootcolor[]      = {0.2, 0.2, 0.2, 1.0};
 static const float bordercolor[]    = {0.4, 0.4, 0.4, 1.0};
 static const float focuscolor[]     = {1.0, 0.4, 0.0, 1.0};
-static const int smartborders       = 1;
+/* To conform the xdg-protocol, set the alpha to zero to restore the old behavior */
+static const float fullscreen_bg[]  = {0.1, 0.1, 0.1, 1.0};
 
 /* tagging */
 static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
@@ -36,17 +38,15 @@ static const Layout layouts[] = {
  * Non-configured monitors are always added to the left. */
 static const MonitorRule monrules[] = {
 	/* name       mfact nmaster scale layout       rotate/reflect x y */
-	{ "eDP-1",    0.5,  1,      2,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL },
+	{ "eDP-1",    0.5,  1,      1.5,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL },
 	{ "DP-1",     0.5,  1,      2,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL },
 	/* defaults */
 	{ NULL,       0.5,  1,      1,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL },
 };
 
 /* keyboard */
-static const struct xkb_rule_names xkb_rules[] = {
-	{ .layout = "us", .variant = "dvorak-alt-intl", .options = "caps:super" },
-	{ .layout = "pl", .options = "caps:super" },
-	{ .layout = "ru", .options = "caps:super" },
+static const struct xkb_rule_names xkb_rules = {
+	 .layout = "us,pl", .variant = "dvorak-alt-intl,", .options = "caps:super,grp:win_space_toggle"
 };
 
 static const int repeat_rate = 25;
@@ -87,7 +87,7 @@ static const uint32_t send_events_mode = LIBINPUT_CONFIG_SEND_EVENTS_ENABLED;
 LIBINPUT_CONFIG_ACCEL_PROFILE_FLAT
 LIBINPUT_CONFIG_ACCEL_PROFILE_ADAPTIVE
 */
-static const enum libinput_config_accel_profile accel_profile = LIBINPUT_CONFIG_ACCEL_PROFILE_ADAPTIVE;
+static const enum libinput_config_accel_profile accel_profile = LIBINPUT_CONFIG_ACCEL_PROFILE_FLAT;
 static const double accel_speed = 0.0;
 
 // original is WLR_MODIFIER_ALT
@@ -103,7 +103,7 @@ static const double accel_speed = 0.0;
 
 /* commands */
 static const char *termcmd[] = { "alacritty", NULL };
-static const char *menucmd[] = { "bemenu-run", NULL };
+static const char *menucmd[] = { "bemenu-run", "-p", "run", NULL };
 static const char *printcopycmd[] = { "sh", "-c", "grim -g \"$(slurp)\" - |wl-copy", NULL };
 static const char *printsavecmd[] = { "sh", "-c", "grim -g \"$(slurp)\" /home/shua/pic/screen/$(date +'screenshot_%Y-%m-%d-%H%M%S.png')", NULL };
 static const char *pwrmenucmd[] = { "pwr", "menu", NULL };
@@ -138,7 +138,7 @@ static const Key keys[] = {
 	{ MODKEY,                    XKB_KEY_t,          setlayout,      {.v = &layouts[0]} },
 	{ MODKEY,                    XKB_KEY_f,          setlayout,      {.v = &layouts[1]} },
 	{ MODKEY,                    XKB_KEY_m,          setlayout,      {.v = &layouts[2]} },
-	{ MODKEY,                    XKB_KEY_space,      nextkeymap,     {.i = +1} },
+	//{ MODKEY,                    XKB_KEY_space,      nextkeymap,     {.i = +1} },
 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_space,      togglefloating, {0} },
 	{ MODKEY,                    XKB_KEY_e,          togglefullscreen, {0} },
 	{ MODKEY,                    XKB_KEY_0,          view,           {.ui = ~0} },

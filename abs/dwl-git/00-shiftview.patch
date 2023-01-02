@@ -1,7 +1,7 @@
-From 465c27f184a5527ed0b37ca1ffbd80e0a4a84991 Mon Sep 17 00:00:00 2001
-From: Guido Cella <guido@guidocella.xyz>
-Date: Sat, 17 Apr 2021 09:00:53 +0200
-Subject: [PATCH] Port shiftview
+From 02082402154d8c7771f957de0f59746a95ff962c Mon Sep 17 00:00:00 2001
+From: shua <itis@isthisa.email>
+Date: Mon, 3 Oct 2022 21:01:38 -0400
+Subject: [PATCH] shiftview
 
 ---
  config.def.h |  4 ++++
@@ -10,11 +10,11 @@ Subject: [PATCH] Port shiftview
  create mode 100644 shiftview.c
 
 diff --git a/config.def.h b/config.def.h
-index 84086594..2b5a4ef4 100644
+index ec1f052..043da8d 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -65,6 +65,8 @@ static const int natural_scrolling = 0;
- static const char *termcmd[] = { "alacritty", NULL };
+@@ -101,6 +101,8 @@ static const double accel_speed = 0.0;
+ static const char *termcmd[] = { "foot", NULL };
  static const char *menucmd[] = { "bemenu-run", NULL };
  
 +#include "shiftview.c"
@@ -22,7 +22,7 @@ index 84086594..2b5a4ef4 100644
  static const Key keys[] = {
  	/* Note that Shift changes certain key codes: c -> C, 2 -> at, etc. */
  	/* modifier                  key                 function        argument */
-@@ -78,6 +80,8 @@ static const Key keys[] = {
+@@ -114,6 +116,8 @@ static const Key keys[] = {
  	{ MODKEY,                    XKB_KEY_l,          setmfact,       {.f = +0.05} },
  	{ MODKEY,                    XKB_KEY_Return,     zoom,           {0} },
  	{ MODKEY,                    XKB_KEY_Tab,        view,           {0} },
@@ -33,7 +33,7 @@ index 84086594..2b5a4ef4 100644
  	{ MODKEY,                    XKB_KEY_f,          setlayout,      {.v = &layouts[1]} },
 diff --git a/shiftview.c b/shiftview.c
 new file mode 100644
-index 00000000..7710c882
+index 0000000..7710c88
 --- /dev/null
 +++ b/shiftview.c
 @@ -0,0 +1,35 @@
@@ -72,3 +72,6 @@ index 00000000..7710c882
 +		view(&a);
 +	}
 +}
+-- 
+2.37.3
+
