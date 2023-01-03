@@ -38,7 +38,7 @@ static const Layout layouts[] = {
  * Non-configured monitors are always added to the left. */
 static const MonitorRule monrules[] = {
 	/* name       mfact nmaster scale layout       rotate/reflect x y */
-	{ "eDP-1",    0.5,  1,      1.5,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL },
+	{ "eDP-1",    0.5,  1,      1.25, &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL },
 	{ "DP-1",     0.5,  1,      2,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL },
 	/* defaults */
 	{ NULL,       0.5,  1,      1,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL },
@@ -107,9 +107,7 @@ static const char *menucmd[] = { "bemenu-run", "-p", "run", NULL };
 static const char *printcopycmd[] = { "sh", "-c", "grim -g \"$(slurp)\" - |wl-copy", NULL };
 static const char *printsavecmd[] = { "sh", "-c", "grim -g \"$(slurp)\" /home/shua/pic/screen/$(date +'screenshot_%Y-%m-%d-%H%M%S.png')", NULL };
 static const char *pwrmenucmd[] = { "pwr", "menu", NULL };
-static const char *raisevolcmd[] = { "amixer", "-q", "sset", "Master", "5%+", NULL };
-static const char *lowervolcmd[] = { "amixer", "-q", "sset", "Master", "5%-", NULL };
-static const char *togglevolcmd[] = { "amixer", "-q", "sset", "Master", "toggle", NULL };
+static const char *lockcmd[] = { "swaylock", NULL };
 
 #include "shiftview.c"
 
@@ -120,16 +118,14 @@ static const Key keys[] = {
 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_Return,     spawn,          {.v = termcmd} },
 	{ 0,                         XKB_KEY_Print,      spawn,          {.v = printcopycmd} },
 	{ WLR_MODIFIER_SHIFT,        XKB_KEY_Print,      spawn,          {.v = printsavecmd} },
-	{ 0,  XKB_KEY_XF86PowerOff,                      spawn,          {.v = pwrmenucmd} },
-	{ 0,  XKB_KEY_XF86AudioRaiseVolume,              spawn,          {.v = raisevolcmd} },
-	{ 0,  XKB_KEY_XF86AudioLowerVolume,              spawn,          {.v = lowervolcmd} },
-	{ 0,  XKB_KEY_XF86AudioMute,                     spawn,          {.v = togglevolcmd} },
+	{ 0,                         XKB_KEY_XF86PowerOff,  spawn,       {.v = pwrmenucmd} },
 	{ MODKEY,                    XKB_KEY_j,          focusstack,     {.i = +1} },
 	{ MODKEY,                    XKB_KEY_k,          focusstack,     {.i = -1} },
 	{ MODKEY,                    XKB_KEY_i,          incnmaster,     {.i = +1} },
 	{ MODKEY,                    XKB_KEY_d,          incnmaster,     {.i = -1} },
 	{ MODKEY,                    XKB_KEY_h,          setmfact,       {.f = -0.05} },
 	{ MODKEY,                    XKB_KEY_l,          setmfact,       {.f = +0.05} },
+	{ MODKEY,                    XKB_KEY_semicolon,  spawn,          {.v = lockcmd} },
 	{ MODKEY,                    XKB_KEY_Return,     zoom,           {0} },
 	{ MODKEY,                    XKB_KEY_Tab,        view,           {0} },
 	{ MODKEY,                    XKB_KEY_Left,       shiftview,      { .i = -1 } },
@@ -138,8 +134,7 @@ static const Key keys[] = {
 	{ MODKEY,                    XKB_KEY_t,          setlayout,      {.v = &layouts[0]} },
 	{ MODKEY,                    XKB_KEY_f,          setlayout,      {.v = &layouts[1]} },
 	{ MODKEY,                    XKB_KEY_m,          setlayout,      {.v = &layouts[2]} },
-	//{ MODKEY,                    XKB_KEY_space,      nextkeymap,     {.i = +1} },
-	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_space,      togglefloating, {0} },
+	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_f,          togglefloating, {0} },
 	{ MODKEY,                    XKB_KEY_e,          togglefullscreen, {0} },
 	{ MODKEY,                    XKB_KEY_0,          view,           {.ui = ~0} },
 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_parenright, tag,            {.ui = ~0} },
