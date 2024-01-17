@@ -1,22 +1,32 @@
+/* Taken from https://github.com/djpohly/dwl/issues/466 */
+#define COLOR(hex)    { ((hex >> 24) & 0xFF) / 255.0f, \
+                        ((hex >> 16) & 0xFF) / 255.0f, \
+                        ((hex >> 8) & 0xFF) / 255.0f, \
+                        (hex & 0xFF) / 255.0f }
 /* appearance */
-static const int sloppyfocus        = 1;  /* focus follows mouse */
-static const unsigned int borderpx  = 1;  /* border pixel of windows */
-static const int lockfullscreen     = 1;  /* 1 will force focus on the fullscreen window */
-static const int smartborders       = 1;
-static const float rootcolor[]      = {0.2, 0.2, 0.2, 1.0};
-static const float bordercolor[]    = {0.4, 0.4, 0.4, 1.0};
-static const float focuscolor[]     = {1.0, 0.4, 0.0, 1.0};
+static const int sloppyfocus               = 1;  /* focus follows mouse */
+static const int bypass_surface_visibility = 0;  /* 1 means idle inhibitors will disable idle tracking even if it's surface isn't visible  */
+static const unsigned int borderpx         = 1;  /* border pixel of windows */
+static const int smartborders              = 1;
+static const float bordercolor[]           = COLOR(0x444444ff);
+static const float focuscolor[]            = COLOR(0xff9900ff);
+static const float urgentcolor[]           = COLOR(0x0099ffff);
 /* To conform the xdg-protocol, set the alpha to zero to restore the old behavior */
-static const float fullscreen_bg[]  = {0.1, 0.1, 0.1, 1.0};
+static const float fullscreen_bg[]         = {0.1, 0.1, 0.1, 1.0};
 
 /* tagging */
-static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+static const int tagcount = 9;
+
+/* logging */
+static int log_level = WLR_ERROR;
+
+/* pointer constraints */
+static const int allow_constrain      = 1;
 
 static const Rule rules[] = {
 	/* app_id     title       tags mask     isfloating   monitor */
 	/* examples:
 	{ "Gimp",     NULL,       0,            1,           -1 },
-	{ "firefox",  NULL,       1 << 8,       0,           -1 },
 	*/
 	{ "firefox",  NULL,       1 << 1,       0,           -1 },
 	{ "pavucontrol", NULL,    1 << 2,       0,           -1 },
@@ -37,11 +47,11 @@ static const Layout layouts[] = {
  * The order in which monitors are defined determines their position.
  * Non-configured monitors are always added to the left. */
 static const MonitorRule monrules[] = {
-	/* name       mfact nmaster scale layout       rotate/reflect x y */
-	{ "eDP-1",    0.5,  1,      1.25, &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL },
-	{ "DP-1",     0.5,  1,      2,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL },
+	/* name       mfact nmaster scale layout       rotate/reflect              x  y */
+	{ "eDP-1",    0.5,  1,      1.25, &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL, -1, -1 },
+	{ "DP-1",     0.5,  1,      2,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL, -1, -1 },
 	/* defaults */
-	{ NULL,       0.5,  1,      1,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL },
+	{ NULL,       0.5,  1,      1,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL, -1, -1 },
 };
 
 /* keyboard */
@@ -89,6 +99,11 @@ LIBINPUT_CONFIG_ACCEL_PROFILE_ADAPTIVE
 */
 static const enum libinput_config_accel_profile accel_profile = LIBINPUT_CONFIG_ACCEL_PROFILE_FLAT;
 static const double accel_speed = 0.0;
+/* You can choose between:
+LIBINPUT_CONFIG_TAP_MAP_LRM -- 1/2/3 finger tap maps to left/right/middle
+LIBINPUT_CONFIG_TAP_MAP_LMR -- 1/2/3 finger tap maps to left/middle/right
+*/
+static const enum libinput_config_tap_button_map button_map = LIBINPUT_CONFIG_TAP_MAP_LRM;
 
 // original is WLR_MODIFIER_ALT
 #define MODKEY WLR_MODIFIER_LOGO
@@ -108,8 +123,6 @@ static const char *printcopycmd[] = { "sh", "-c", "grim -g \"$(slurp)\" - |wl-co
 static const char *printsavecmd[] = { "sh", "-c", "grim -g \"$(slurp)\" /home/shua/pic/screen/$(date +'screenshot_%Y-%m-%d-%H%M%S.png')", NULL };
 static const char *pwrmenucmd[] = { "pwr", "menu", NULL };
 static const char *lockcmd[] = { "swaylock", NULL };
-
-#include "shiftview.c"
 
 static const Key keys[] = {
 	/* Note that Shift changes certain key codes: c -> C, 2 -> at, etc. */
@@ -134,7 +147,7 @@ static const Key keys[] = {
 	{ MODKEY,                    XKB_KEY_t,          setlayout,      {.v = &layouts[0]} },
 	{ MODKEY,                    XKB_KEY_f,          setlayout,      {.v = &layouts[1]} },
 	{ MODKEY,                    XKB_KEY_m,          setlayout,      {.v = &layouts[2]} },
-	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_f,          togglefloating, {0} },
+	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_F,          togglefloating, {0} },
 	{ MODKEY,                    XKB_KEY_e,          togglefullscreen, {0} },
 	{ MODKEY,                    XKB_KEY_0,          view,           {.ui = ~0} },
 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_parenright, tag,            {.ui = ~0} },

@@ -1,0 +1,100 @@
+From 8b4e11bbcb37774bfc564334828f859ec1f0d0c8 Mon Sep 17 00:00:00 2001
+From: shua <itis@isthisa.email>
+Date: Sat, 15 Apr 2023 10:28:52 -0400
+Subject: [PATCH 2/5] shiftview
+
+---
+ config.def.h |  6 ++++--
+ dwl.c        | 38 +++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 41 insertions(+), 3 deletions(-)
+
+diff --git a/config.def.h b/config.def.h
+index db0babc..f523de2 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -13,8 +13,8 @@ static const float urgentcolor[]           = COLOR(0xff0000ff);
+ /* To conform the xdg-protocol, set the alpha to zero to restore the old behavior */
+ static const float fullscreen_bg[]         = {0.1, 0.1, 0.1, 1.0}; /* You can also use glsl colors */
+ 
+-/* tagging - TAGCOUNT must be no greater than 31 */
+-#define TAGCOUNT (9)
++/* tagging - tagcount must be no greater than 31 */
++static const int tagcount = 9;
+ 
+ /* logging */
+ static int log_level = WLR_ERROR;
+@@ -128,6 +128,8 @@ static const Key keys[] = {
+ 	{ MODKEY,                    XKB_KEY_l,          setmfact,       {.f = +0.05} },
+ 	{ MODKEY,                    XKB_KEY_Return,     zoom,           {0} },
+ 	{ MODKEY,                    XKB_KEY_Tab,        view,           {0} },
++	{ MODKEY,                    XKB_KEY_a,          shiftview,      { .i = -1 } },
++	{ MODKEY,                    XKB_KEY_semicolon,  shiftview,      { .i = 1 } },
+ 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_C,          killclient,     {0} },
+ 	{ MODKEY,                    XKB_KEY_t,          setlayout,      {.v = &layouts[0]} },
+ 	{ MODKEY,                    XKB_KEY_f,          setlayout,      {.v = &layouts[1]} },
+diff --git a/dwl.c b/dwl.c
+index ef27a1d..bc72f8c 100644
+--- a/dwl.c
++++ b/dwl.c
+@@ -68,7 +68,7 @@
+ #define VISIBLEON(C, M)         ((M) && (C)->mon == (M) && ((C)->tags & (M)->tagset[(M)->seltags]))
+ #define LENGTH(X)               (sizeof X / sizeof X[0])
+ #define END(A)                  ((A) + LENGTH(A))
+-#define TAGMASK                 ((1u << TAGCOUNT) - 1)
++#define TAGMASK                 ((1u << tagcount) - 1)
+ #define LISTEN(E, L, H)         wl_signal_add((E), ((L)->notify = (H), (L)))
+ #define LISTEN_STATIC(E, H)     do { static struct wl_listener _l = {.notify = (H)}; wl_signal_add((E), &_l); } while (0)
+ 
+@@ -306,6 +306,7 @@ static void setmon(Client *c, Monitor *m, uint32_t newtags);
+ static void setpsel(struct wl_listener *listener, void *data);
+ static void setsel(struct wl_listener *listener, void *data);
+ static void setup(void);
++static void shiftview(const Arg *arg);
+ static void spawn(const Arg *arg);
+ static void startdrag(struct wl_listener *listener, void *data);
+ static void tag(const Arg *arg);
+@@ -2361,6 +2362,41 @@ setup(void)
+ #endif
+ }
+ 
++// "arg->i" stores the number of tags to shift right (positive value)
++//          or left (negative value)
++void
++shiftview(const Arg *arg)
++{
++	Arg a;
++	Client *c;
++	bool visible = false;
++	int i = arg->i;
++	int count = 0;
++	int nextseltags, curseltags = selmon->tagset[selmon->seltags];
++
++	do {
++		if (i > 0) // left circular shift
++			nextseltags = (curseltags << i) | (curseltags >> (tagcount - i));
++		else // right circular shift
++			nextseltags = curseltags >> (- i) | (curseltags << (tagcount + i));
++
++		// Check if the tag is visible
++		wl_list_for_each(c, &clients, link) {
++			if (nextseltags & c->tags) {
++				visible = true;
++				break;
++			}
++		}
++
++		i += arg->i;
++	} while (!visible && ++count <= tagcount);
++
++	if (count <= tagcount) {
++		a.i = nextseltags;
++		view(&a);
++	}
++}
++
+ void
+ spawn(const Arg *arg)
+ {
+-- 
+2.43.0
+

@@ -1,10 +1,10 @@
-#Maintainer: Devin J. Pohly <djpohly+arch@gmail.com>
+# Maintainer: Devin J. Pohly <djpohly+arch@gmail.com>
 pkgname=dwl-git
-pkgver=0.3.1.r153.87d87cc
+pkgver=0.5.r1.58d33b7
 pkgrel=1
 pkgdesc="Simple, hackable dynamic tiling Wayland compositor (dwm for Wayland)"
 arch=('x86_64')
-url="https://github.com/djpohly/dwl"
+url="https://codeberg.org/dwl/dwl.git"
 license=('GPL')
 depends=('wlroots>=0.13' 'swaylock' 'bemenu' 'grim')
 makedepends=('git' 'wayland-protocols')
@@ -12,29 +12,29 @@ optdepends=('xorg-xwayland: for XWayland support')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 # append #branch=wlroots-next to build against wlroots-git
-_commit="87d87cc4041a997d00ebf234ca5118b9248a3b95"
-source=('git+https://github.com/djpohly/dwl#commit=87d87cc4041a997d00ebf234ca5118b9248a3b95'
+#_commit="87d87cc4041a997d00ebf234ca5118b9248a3b95"
+#source=('git+https://github.com/djpohly/dwl#commit=87d87cc4041a997d00ebf234ca5118b9248a3b95'
+source=('git+https://github.com/djpohly/dwl'
         config.h
-        00-print-appid.patch
-        00-shiftview.patch
-        01-smartborders.patch)
-sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
+        0001-make-protocols.patch
+        0002-shiftview.patch
+        0003-smartborders.patch
+        0004-ipc.patch
+        0005-pointerconstraints.patch)
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
 
 prepare() {
 	cd "$srcdir/${pkgname%-git}"
+	git reset --hard --quiet origin/HEAD
+	rm -f shiftview.c protocols/dwl-ipc*
 	# Use a custom config.h if the file is not empty
 	if [ -s "$srcdir/config.h" ]; then
 		cp -f "$srcdir/config.h" config.h
 	fi
 	# Uncomment to compile with XWayland support
-	sed -i -e '/-DXWAYLAND/s/^#//' config.mk
+	# sed -i -e '/^#\(XWAYLAND\|XLIB\)/s/^#//' config.mk
 
-	git checkout .
-	rm -f shiftview.c
-	for p in "$srcdir"/*.patch; do
-		patch -i $p
-	done
-	# git apply "$srcdir"/*.patch
+	git apply "$srcdir"/*.patch
 }
 
 pkgver() {
