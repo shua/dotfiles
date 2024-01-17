@@ -4,7 +4,7 @@ uniglyphs="$HOME/.config/uniglyphs.txt"
 arg0=$0
 
 gen() {
-	nameslist='http://unicode.org/Public/9.0.0/ucd/NamesList.txt'
+	nameslist='http://unicode.org/Public/15.1.0/ucd/NamesList.txt'
 
 	uniglyph() {
 		case $1 in

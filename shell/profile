@@ -32,7 +32,7 @@ prepend_path "$HOME/.local/bin"
 append_path "$HOME/.cargo/bin"
 append_path "$HOME/.elan/bin"
 
-export EDITOR=nvim
+export EDITOR=/usr/lib/helix/hx
 export BROWSER=firefox
 export CC=clang
 export CPP="clang -E"
@@ -41,6 +41,7 @@ export PLAN9=/home/shua/src/plan9port
 export GIMP2_DIRECTORY=$HOME/.config/gimp
 export GNUPGHOME=$HOME/.config/gnupg
 export MOZ_ENABLE_WAYLAND=1
+export HELIX_RUNTIME=$HOME/.config/helix/runtime
 
 append_path "$PLAN9/bin"
 
@@ -51,6 +52,42 @@ PATH=$UNTARNISHED_PATH
 unset UNTARNISHED_PATH
 prepend_path $HOME/.config/opam/*/bin
 prepend_path "$HOME/.nix-profile/bin"
+
+rand() {
+	n=$1
+	v=$(
+		(
+			echo 'ibase=16; '
+			od -x </dev/random |cut -d' ' -f2- |tr 'a-z' 'A-Z' |tr ' ' '\n'
+		) \
+		| bc \
+		| (
+			while read v; do
+				# keep reading values until we are in a fair range
+				if [ $(( v <= (65535 / n * n) )) = 1 ]; then
+					echo $((v % n))
+				fi
+			done
+		) \
+		| head -n1
+	)
+	echo $v
+}
+
+roll() {
+	echo "$*" | grep -q -e '[0-9]*d[0-9]*\(  *[0-9]*d[0-9]*\)*' \
+	|| echo "args must be of the form NdM"
+	for d in $@; do
+		n=$(echo $d | cut -d'd' -f1)
+		b=$(echo $d | cut -d'd' -f2)
+		printf '%s: ' "$d"
+		while [ $n -gt 0 ]; do
+			printf '%d ' $(($(rand $b) + 1));
+			n=$((n - 1));
+		done
+		echo
+	done
+}
 
 # overrides/commands
 alias sway="sway -d 2>$HOME/.log/sway"
@@ -72,7 +109,7 @@ alias la="ls -a"
 
 alias E="$EDITOR"
 
-alias hx=helix
+alias hx=/usr/lib/helix/hx
 
 alias ga="git add"
 alias gau="git add -u"
@@ -91,10 +128,16 @@ alias rust-musl-builder='docker run --rm -it -v "$(pwd)":/home/rust/src ekidd/ru
 
 alias wasabi='aws --endpoint-url https://s3.us-east-2.wasabisys.com --profile wasabi-jdll s3'
 
-tmux source ~/.config/tmux/tmux.conf
+if [ "$(tty)" = "/dev/tty1" ]; then
+	exec $HOME/bin/dwlinit
+fi
 
-echo sourced profile
-echo PATH is $(echo "$PATH" |tr ':' ' ')
+if [ -n "$TMUX" ]; then
+	tmux source ~/.config/tmux/tmux.conf
+fi
+
+# echo sourced profile
+# echo PATH is $(echo "$PATH" |tr ':' ' ')
 
 unset -f append_path
 unset -f prepend_path

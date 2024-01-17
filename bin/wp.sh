@@ -14,5 +14,5 @@ else
 fi
 
 # swaymsg "output * bg $wp fill"
-swaybg -i $wp -m fill
+exec swaybg -i $wp -m fill
 
