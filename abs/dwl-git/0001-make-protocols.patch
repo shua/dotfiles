@@ -1,39 +1,17 @@
-From 3b7b502aa8279829cfba7b56e97372cf33b5e4f8 Mon Sep 17 00:00:00 2001
-From: shua <itis@isthisa.email>
-Date: Tue, 5 Dec 2023 00:24:12 +0100
-Subject: [PATCH 1/5] make protocols
+From f859a0cbaf34c35a2b145aa89f762691c99bb95a Mon Sep 17 00:00:00 2001
+From: shua <gpg@isthisa.email>
+Date: Sun, 28 Jul 2024 15:01:36 +0200
+Subject: [PATCH 1/4] make protocols
 
 ---
- Makefile  | 7 ++++++-
- config.mk | 6 ++----
- 2 files changed, 8 insertions(+), 5 deletions(-)
+ config.mk | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/Makefile b/Makefile
-index 6cde460..421d6a6 100644
---- a/Makefile
-+++ b/Makefile
-@@ -13,10 +13,15 @@ PKGS      = wlroots wayland-server xkbcommon libinput $(XLIBS)
- DWLCFLAGS = `$(PKG_CONFIG) --cflags $(PKGS)` $(DWLCPPFLAGS) $(DWLDEVCFLAGS) $(CFLAGS)
- LDLIBS    = `$(PKG_CONFIG) --libs $(PKGS)` $(LIBS)
- 
-+PROTOCOLS = \
-+	cursor-shape-v1-protocol.h \
-+	xdg-shell-protocol.h \
-+	wlr-layer-shell-unstable-v1-protocol.h
-+
- all: dwl
- dwl: dwl.o util.o
- 	$(CC) dwl.o util.o $(LDLIBS) $(LDFLAGS) $(DWLCFLAGS) -o $@
--dwl.o: dwl.c config.mk config.h client.h cursor-shape-v1-protocol.h xdg-shell-protocol.h wlr-layer-shell-unstable-v1-protocol.h
-+dwl.o: dwl.c config.mk config.h client.h $(PROTOCOLS)
- util.o: util.c util.h
- 
- # wayland-scanner is a tool which generates C headers and rigging for Wayland
 diff --git a/config.mk b/config.mk
-index 906f403..31a5789 100644
+index c5e3b4c..41dfaa2 100644
 --- a/config.mk
 +++ b/config.mk
-@@ -8,8 +8,6 @@ PREFIX = /usr/local
+@@ -8,10 +8,8 @@ PREFIX = /usr/local
  MANDIR = $(PREFIX)/share/man
  DATADIR = $(PREFIX)/share
  
@@ -44,6 +22,9 @@ index 906f403..31a5789 100644
 -#XLIBS = xcb xcb-icccm
 +XWAYLAND = -DXWAYLAND
 +XLIBS = xcb xcb-icccm
+ 
+-CC = gcc
++CC = clang
 -- 
-2.43.0
+2.45.2
 

@@ -26,7 +26,7 @@ purge_path "/usr/bin/site_perl"
 purge_path "/usr/bin/vendor_perl"
 purge_path "/usr/bin/core_perl"
 purge_path "$HOME/.nix-profile/bin"
-purge_path $HOME/.config/opam/*/bin
+# purge_path $HOME/.config/opam/*/bin
 prepend_path "$HOME/bin"
 prepend_path "$HOME/.local/bin"
 append_path "$HOME/.cargo/bin"
@@ -37,19 +37,19 @@ export BROWSER=firefox
 export CC=clang
 export CPP="clang -E"
 export CXX="clang++"
-export PLAN9=/home/shua/src/plan9port
+# export PLAN9=/home/shua/src/plan9port
 export GIMP2_DIRECTORY=$HOME/.config/gimp
 export GNUPGHOME=$HOME/.config/gnupg
 export MOZ_ENABLE_WAYLAND=1
 export HELIX_RUNTIME=$HOME/.config/helix/runtime
 
-append_path "$PLAN9/bin"
+# append_path "$PLAN9/bin"
 
-UNTARNISHED_PATH=$PATH
-. $HOME/.config/opam/opam-init/init.sh > /dev/null 2> /dev/null || true
-. $HOME/.nix-profile/etc/profile.d/nix.sh || true
-PATH=$UNTARNISHED_PATH
-unset UNTARNISHED_PATH
+# UNTARNISHED_PATH=$PATH
+# . $HOME/.config/opam/opam-init/init.sh > /dev/null 2> /dev/null || true
+# . $HOME/.nix-profile/etc/profile.d/nix.sh || true
+# PATH=$UNTARNISHED_PATH
+# unset UNTARNISHED_PATH
 prepend_path $HOME/.config/opam/*/bin
 prepend_path "$HOME/.nix-profile/bin"
 
@@ -102,7 +102,7 @@ alias printlast='fc -ln -1 | awk '"'"'{sub(/^[ \t]*/, ""); print }'"'"
 alias df="df -h"
 alias du="du -h"
 
-alias ls="ls -h --color=auto"
+alias ls="\ls -h --color=auto"
 alias l="ls -F"
 alias ll="ls -l"
 alias la="ls -a"
@@ -128,13 +128,13 @@ alias rust-musl-builder='docker run --rm -it -v "$(pwd)":/home/rust/src ekidd/ru
 
 alias wasabi='aws --endpoint-url https://s3.us-east-2.wasabisys.com --profile wasabi-jdll s3'
 
-if [ "$(tty)" = "/dev/tty1" ]; then
-	exec $HOME/bin/dwlinit
-fi
+#if [ "$(tty)" = "/dev/tty1" ]; then
+#	exec $HOME/bin/dwlinit
+#fi
 
-if [ -n "$TMUX" ]; then
-	tmux source ~/.config/tmux/tmux.conf
-fi
+#if [ -n "$TMUX" ]; then
+#	tmux source ~/.config/tmux/tmux.conf
+#fi
 
 # echo sourced profile
 # echo PATH is $(echo "$PATH" |tr ':' ' ')
@@ -142,3 +142,4 @@ fi
 unset -f append_path
 unset -f prepend_path
 unset -f purge_path
+

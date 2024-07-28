@@ -8,6 +8,7 @@ static const int sloppyfocus               = 1;  /* focus follows mouse */
 static const int bypass_surface_visibility = 0;  /* 1 means idle inhibitors will disable idle tracking even if it's surface isn't visible  */
 static const unsigned int borderpx         = 1;  /* border pixel of windows */
 static const int smartborders              = 1;
+static const float rootcolor[]           = COLOR(0x222222ff);
 static const float bordercolor[]           = COLOR(0x444444ff);
 static const float focuscolor[]            = COLOR(0xff9900ff);
 static const float urgentcolor[]           = COLOR(0x0099ffff);
@@ -113,32 +114,30 @@ static const enum libinput_config_tap_button_map button_map = LIBINPUT_CONFIG_TA
 	{ MODKEY|WLR_MODIFIER_SHIFT, SKEY,           tag,             {.ui = 1 << TAG} }, \
 	{ MODKEY|WLR_MODIFIER_CTRL|WLR_MODIFIER_SHIFT,SKEY,toggletag, {.ui = 1 << TAG} }
 
-/* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
-
-/* commands */
-static const char *termcmd[] = { "alacritty", NULL };
-static const char *menucmd[] = { "bemenu-run", "-p", "run", NULL };
-static const char *printcopycmd[] = { "sh", "-c", "grim -g \"$(slurp)\" - |wl-copy", NULL };
-static const char *printsavecmd[] = { "sh", "-c", "grim -g \"$(slurp)\" /home/shua/pic/screen/$(date +'screenshot_%Y-%m-%d-%H%M%S.png')", NULL };
-static const char *pwrmenucmd[] = { "pwr", "menu", NULL };
-static const char *lockcmd[] = { "swaylock", NULL };
+#define CMD(...) { .v = (const char*[]){__VA_ARGS__, NULL} }
+#define SCREENCOPY SHCMD("grim -g \"$(slurp)\" - |wl-copy")
+#define SCREENSAVE SHCMD("grim -g \"$(slurp)\" $HOME/pic/screen/$(date +'screenshot_%Y-%m-%d-%H%M%S.png')")
+#define SETVOL(vol) CMD("amixer", "sset", "Master", vol)
 
 static const Key keys[] = {
 	/* Note that Shift changes certain key codes: c -> C, 2 -> at, etc. */
 	/* modifier                  key                 function        argument */
-	{ MODKEY,                    XKB_KEY_p,          spawn,          {.v = menucmd} },
-	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_Return,     spawn,          {.v = termcmd} },
-	{ 0,                         XKB_KEY_Print,      spawn,          {.v = printcopycmd} },
-	{ WLR_MODIFIER_SHIFT,        XKB_KEY_Print,      spawn,          {.v = printsavecmd} },
-	{ 0,                         XKB_KEY_XF86PowerOff,  spawn,       {.v = pwrmenucmd} },
+	{ MODKEY,                    XKB_KEY_p,          spawn,          CMD("bemenu-run", "-p", "run") },
+	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_Return,     spawn,          CMD("alacritty") },
+	{ 0,                         XKB_KEY_Print,      spawn,          SCREENCOPY },
+	{ WLR_MODIFIER_SHIFT,        XKB_KEY_Print,      spawn,          SCREENSAVE },
+	{ 0,                    XKB_KEY_XF86PowerOff,    spawn,          CMD("pwr", "menu") },
+	{ 0,                    XKB_KEY_XF86AudioRaiseVolume, spawn,          SETVOL("5%+") },
+	{ 0,                    XKB_KEY_XF86AudioLowerVolume, spawn,          SETVOL("5%-") },
+	{ 0,                    XKB_KEY_XF86AudioMute,   spawn,          SETVOL("toggle") },
 	{ MODKEY,                    XKB_KEY_j,          focusstack,     {.i = +1} },
 	{ MODKEY,                    XKB_KEY_k,          focusstack,     {.i = -1} },
 	{ MODKEY,                    XKB_KEY_i,          incnmaster,     {.i = +1} },
 	{ MODKEY,                    XKB_KEY_d,          incnmaster,     {.i = -1} },
 	{ MODKEY,                    XKB_KEY_h,          setmfact,       {.f = -0.05} },
 	{ MODKEY,                    XKB_KEY_l,          setmfact,       {.f = +0.05} },
-	{ MODKEY,                    XKB_KEY_semicolon,  spawn,          {.v = lockcmd} },
+	{ MODKEY,                    XKB_KEY_semicolon,  spawn,          CMD("swaylock") },
 	{ MODKEY,                    XKB_KEY_Return,     zoom,           {0} },
 	{ MODKEY,                    XKB_KEY_Tab,        view,           {0} },
 	{ MODKEY,                    XKB_KEY_Left,       shiftview,      { .i = -1 } },

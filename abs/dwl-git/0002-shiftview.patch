@@ -1,7 +1,7 @@
-From 8b4e11bbcb37774bfc564334828f859ec1f0d0c8 Mon Sep 17 00:00:00 2001
-From: shua <itis@isthisa.email>
-Date: Sat, 15 Apr 2023 10:28:52 -0400
-Subject: [PATCH 2/5] shiftview
+From 4fc4a84d734e05cf0991beb0178d89c853376219 Mon Sep 17 00:00:00 2001
+From: shua <gpg@isthisa.email>
+Date: Sun, 28 Jul 2024 15:03:01 +0200
+Subject: [PATCH 2/4] shiftview
 
 ---
  config.def.h |  6 ++++--
@@ -9,12 +9,12 @@ Subject: [PATCH 2/5] shiftview
  2 files changed, 41 insertions(+), 3 deletions(-)
 
 diff --git a/config.def.h b/config.def.h
-index db0babc..f523de2 100644
+index 22d2171..8eff14f 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -13,8 +13,8 @@ static const float urgentcolor[]           = COLOR(0xff0000ff);
- /* To conform the xdg-protocol, set the alpha to zero to restore the old behavior */
- static const float fullscreen_bg[]         = {0.1, 0.1, 0.1, 1.0}; /* You can also use glsl colors */
+@@ -14,8 +14,8 @@ static const float urgentcolor[]           = COLOR(0xff0000ff);
+ /* This conforms to the xdg-protocol. Set the alpha to zero to restore the old behavior */
+ static const float fullscreen_bg[]         = {0.1f, 0.1f, 0.1f, 1.0f}; /* You can also use glsl colors */
  
 -/* tagging - TAGCOUNT must be no greater than 31 */
 -#define TAGCOUNT (9)
@@ -23,8 +23,8 @@ index db0babc..f523de2 100644
  
  /* logging */
  static int log_level = WLR_ERROR;
-@@ -128,6 +128,8 @@ static const Key keys[] = {
- 	{ MODKEY,                    XKB_KEY_l,          setmfact,       {.f = +0.05} },
+@@ -135,6 +135,8 @@ static const Key keys[] = {
+ 	{ MODKEY,                    XKB_KEY_l,          setmfact,       {.f = +0.05f} },
  	{ MODKEY,                    XKB_KEY_Return,     zoom,           {0} },
  	{ MODKEY,                    XKB_KEY_Tab,        view,           {0} },
 +	{ MODKEY,                    XKB_KEY_a,          shiftview,      { .i = -1 } },
@@ -33,10 +33,10 @@ index db0babc..f523de2 100644
  	{ MODKEY,                    XKB_KEY_t,          setlayout,      {.v = &layouts[0]} },
  	{ MODKEY,                    XKB_KEY_f,          setlayout,      {.v = &layouts[1]} },
 diff --git a/dwl.c b/dwl.c
-index ef27a1d..bc72f8c 100644
+index 5bf995e..e016377 100644
 --- a/dwl.c
 +++ b/dwl.c
-@@ -68,7 +68,7 @@
+@@ -76,7 +76,7 @@
  #define VISIBLEON(C, M)         ((M) && (C)->mon == (M) && ((C)->tags & (M)->tagset[(M)->seltags]))
  #define LENGTH(X)               (sizeof X / sizeof X[0])
  #define END(A)                  ((A) + LENGTH(A))
@@ -45,7 +45,7 @@ index ef27a1d..bc72f8c 100644
  #define LISTEN(E, L, H)         wl_signal_add((E), ((L)->notify = (H), (L)))
  #define LISTEN_STATIC(E, H)     do { static struct wl_listener _l = {.notify = (H)}; wl_signal_add((E), &_l); } while (0)
  
-@@ -306,6 +306,7 @@ static void setmon(Client *c, Monitor *m, uint32_t newtags);
+@@ -333,6 +333,7 @@ static void setmon(Client *c, Monitor *m, uint32_t newtags);
  static void setpsel(struct wl_listener *listener, void *data);
  static void setsel(struct wl_listener *listener, void *data);
  static void setup(void);
@@ -53,7 +53,7 @@ index ef27a1d..bc72f8c 100644
  static void spawn(const Arg *arg);
  static void startdrag(struct wl_listener *listener, void *data);
  static void tag(const Arg *arg);
-@@ -2361,6 +2362,41 @@ setup(void)
+@@ -2644,6 +2645,41 @@ setup(void)
  #endif
  }
  
@@ -96,5 +96,5 @@ index ef27a1d..bc72f8c 100644
  spawn(const Arg *arg)
  {
 -- 
-2.43.0
+2.45.2
 

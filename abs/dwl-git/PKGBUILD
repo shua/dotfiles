@@ -1,10 +1,10 @@
 # Maintainer: Devin J. Pohly <djpohly+arch@gmail.com>
 pkgname=dwl-git
-pkgver=0.5.r1.58d33b7
+pkgver=0.7.rc1.r0.bd59573
 pkgrel=1
 pkgdesc="Simple, hackable dynamic tiling Wayland compositor (dwm for Wayland)"
 arch=('x86_64')
-url="https://codeberg.org/dwl/dwl.git"
+url="https://codeberg.org/dwl/dwl"
 license=('GPL')
 depends=('wlroots>=0.13' 'swaylock' 'bemenu' 'grim')
 makedepends=('git' 'wayland-protocols')
@@ -14,18 +14,18 @@ conflicts=("${pkgname%-git}")
 # append #branch=wlroots-next to build against wlroots-git
 #_commit="87d87cc4041a997d00ebf234ca5118b9248a3b95"
 #source=('git+https://github.com/djpohly/dwl#commit=87d87cc4041a997d00ebf234ca5118b9248a3b95'
-source=('git+https://github.com/djpohly/dwl'
+source=('git+https://codeberg.org/dwl/dwl#tag=v0.7-rc1'
         config.h
         0001-make-protocols.patch
         0002-shiftview.patch
         0003-smartborders.patch
-        0004-ipc.patch
-        0005-pointerconstraints.patch)
-sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
+        0004-ipc.patch)
+        # 0005-pointerconstraints.patch)
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
 
 prepare() {
 	cd "$srcdir/${pkgname%-git}"
-	git reset --hard --quiet origin/HEAD
+	# git reset --hard --quiet bd59573
 	rm -f shiftview.c protocols/dwl-ipc*
 	# Use a custom config.h if the file is not empty
 	if [ -s "$srcdir/config.h" ]; then
