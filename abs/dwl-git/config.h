@@ -34,6 +34,7 @@ static const Rule rules[] = {
 	{ "Signal",   NULL,       1 << 7,       0,           -1 },
 	{ "discord",  NULL,       1 << 7,       0,           -1 },
 	{ "Deezer",   NULL,       1 << 8,       0,           -1 },
+	{ "Pinentry-gtk",   NULL,      0,       1,           -1 },
 };
 
 /* layout(s) */
@@ -67,7 +68,7 @@ static const int repeat_delay = 600;
 static const int tap_to_click = 1;
 static const int tap_and_drag = 1;
 static const int drag_lock = 1;
-static const int natural_scrolling = 0;
+static const int natural_scrolling = 1;
 static const int disable_while_typing = 1;
 static const int left_handed = 0;
 static const int middle_button_emulation = 0;
