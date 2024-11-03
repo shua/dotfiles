@@ -37,13 +37,11 @@ export BROWSER=firefox
 export CC=clang
 export CPP="clang -E"
 export CXX="clang++"
-# export PLAN9=/home/shua/src/plan9port
 export GIMP2_DIRECTORY=$HOME/.config/gimp
 export GNUPGHOME=$HOME/.config/gnupg
 export MOZ_ENABLE_WAYLAND=1
 export HELIX_RUNTIME=$HOME/.config/helix/runtime
-
-# append_path "$PLAN9/bin"
+export GOPATH=$HOME/.local/share/go
 
 # UNTARNISHED_PATH=$PATH
 # . $HOME/.config/opam/opam-init/init.sh > /dev/null 2> /dev/null || true
