@@ -82,9 +82,9 @@ LIBINPUT_CONFIG_SCROLL_ON_BUTTON_DOWN
 static const enum libinput_config_scroll_method scroll_method = LIBINPUT_CONFIG_SCROLL_2FG;
 
 /* You can choose between:
-LIBINPUT_CONFIG_CLICK_METHOD_NONE       
-LIBINPUT_CONFIG_CLICK_METHOD_BUTTON_AREAS       
-LIBINPUT_CONFIG_CLICK_METHOD_CLICKFINGER 
+LIBINPUT_CONFIG_CLICK_METHOD_NONE
+LIBINPUT_CONFIG_CLICK_METHOD_BUTTON_AREAS
+LIBINPUT_CONFIG_CLICK_METHOD_CLICKFINGER
 */
 static const enum libinput_config_click_method click_method = LIBINPUT_CONFIG_CLICK_METHOD_BUTTON_AREAS;
 
@@ -128,10 +128,15 @@ static const Key keys[] = {
 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_Return,     spawn,          CMD("alacritty") },
 	{ 0,                         XKB_KEY_Print,      spawn,          SCREENCOPY },
 	{ WLR_MODIFIER_SHIFT,        XKB_KEY_Print,      spawn,          SCREENSAVE },
-	{ 0,                    XKB_KEY_XF86PowerOff,    spawn,          CMD("pwr", "menu") },
-	{ 0,                    XKB_KEY_XF86AudioRaiseVolume, spawn,          SETVOL("5%+") },
-	{ 0,                    XKB_KEY_XF86AudioLowerVolume, spawn,          SETVOL("5%-") },
-	{ 0,                    XKB_KEY_XF86AudioMute,   spawn,          SETVOL("toggle") },
+
+	{ 0,               XKB_KEY_XF86PowerOff,         spawn,          CMD("eww", "open", "pwr") },
+	{ 0,               XKB_KEY_XF86AudioRaiseVolume, spawn,          SETVOL("5%+") },
+	{ 0,               XKB_KEY_XF86AudioLowerVolume, spawn,          SETVOL("5%-") },
+	{ 0,               XKB_KEY_XF86AudioMute,        spawn,          SETVOL("toggle") },
+	{ 0,               XKB_KEY_XF86AudioPlay,        spawn,          CMD("playerctl", "play-pause") },
+	{ 0,               XKB_KEY_XF86AudioNext,        spawn,          CMD("playerctl", "next") },
+	{ 0,               XKB_KEY_XF86AudioPrev,        spawn,          CMD("playerctl", "previous") },
+
 	{ MODKEY,                    XKB_KEY_j,          focusstack,     {.i = +1} },
 	{ MODKEY,                    XKB_KEY_k,          focusstack,     {.i = -1} },
 	{ MODKEY,                    XKB_KEY_i,          incnmaster,     {.i = +1} },

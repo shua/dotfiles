@@ -1,6 +1,6 @@
-From f859a0cbaf34c35a2b145aa89f762691c99bb95a Mon Sep 17 00:00:00 2001
+From 004fce6ed9cd048b2232906c28985d499ebe11cf Mon Sep 17 00:00:00 2001
 From: shua <gpg@isthisa.email>
-Date: Sun, 28 Jul 2024 15:01:36 +0200
+Date: Sun, 3 Nov 2024 22:00:27 +0100
 Subject: [PATCH 1/4] make protocols
 
 ---
@@ -8,12 +8,12 @@ Subject: [PATCH 1/4] make protocols
  1 file changed, 3 insertions(+), 5 deletions(-)
 
 diff --git a/config.mk b/config.mk
-index c5e3b4c..41dfaa2 100644
+index e2f1816..09f0f5a 100644
 --- a/config.mk
 +++ b/config.mk
-@@ -8,10 +8,8 @@ PREFIX = /usr/local
- MANDIR = $(PREFIX)/share/man
- DATADIR = $(PREFIX)/share
+@@ -24,13 +24,11 @@ WLR_LIBS = `$(PKG_CONFIG) --libs wlroots-0.19`
+ #	-I$(PWD)/wlroots/0.19/include/wlroots-0.19
+ #WLR_LIBS = -Wl,-rpath,$(PWD)/wlroots/0.19/lib64 -L$(PWD)/wlroots/0.19/lib64 -lwlroots-0.19
  
 -XWAYLAND =
 -XLIBS =
@@ -23,8 +23,11 @@ index c5e3b4c..41dfaa2 100644
 +XWAYLAND = -DXWAYLAND
 +XLIBS = xcb xcb-icccm
  
--CC = gcc
+ # dwl itself only uses C99 features, but wlroots' headers use anonymous unions (C11).
+ # To avoid warnings about them, we do not use -std=c99 and instead of using the
+ # gmake default 'CC=c99', we use cc.
+-CC = cc
 +CC = clang
 -- 
-2.45.2
+2.47.0
 

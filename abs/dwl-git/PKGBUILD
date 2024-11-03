@@ -1,6 +1,6 @@
 # Maintainer: Devin J. Pohly <djpohly+arch@gmail.com>
 pkgname=dwl-git
-pkgver=0.7.rc1.r0.bd59573
+pkgver=0.8.dev.r46.8424576
 pkgrel=1
 pkgdesc="Simple, hackable dynamic tiling Wayland compositor (dwm for Wayland)"
 arch=('x86_64')
@@ -14,7 +14,7 @@ conflicts=("${pkgname%-git}")
 # append #branch=wlroots-next to build against wlroots-git
 #_commit="87d87cc4041a997d00ebf234ca5118b9248a3b95"
 #source=('git+https://github.com/djpohly/dwl#commit=87d87cc4041a997d00ebf234ca5118b9248a3b95'
-source=('git+https://codeberg.org/dwl/dwl#tag=v0.7-rc1'
+source=('git+https://codeberg.org/dwl/dwl'
         config.h
         0001-make-protocols.patch
         0002-shiftview.patch
