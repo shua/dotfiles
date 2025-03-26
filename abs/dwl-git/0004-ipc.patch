@@ -1,6 +1,6 @@
-From 86118efa4300f8455c35b8c043bf2b781c8f98e4 Mon Sep 17 00:00:00 2001
+From 727336189c185611389c788b7d5dda18fd02af4b Mon Sep 17 00:00:00 2001
 From: shua <gpg@isthisa.email>
-Date: Sun, 28 Jul 2024 15:23:43 +0200
+Date: Tue, 21 Jan 2025 20:02:31 +0100
 Subject: [PATCH 4/4] ipc
 
 ---
@@ -12,7 +12,7 @@ Subject: [PATCH 4/4] ipc
  create mode 100644 protocols/dwl-ipc-unstable-v2.xml
 
 diff --git a/Makefile b/Makefile
-index 8db7409..d53efa1 100644
+index 578194f..63a957e 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -16,12 +16,21 @@ PKGS      = wayland-server xkbcommon libinput $(XLIBS)
@@ -69,7 +69,7 @@ index 8eff14f..a46c561 100644
  	{ MODKEY,                    XKB_KEY_k,          focusstack,     {.i = -1} },
  	{ MODKEY,                    XKB_KEY_i,          incnmaster,     {.i = +1} },
 diff --git a/dwl.c b/dwl.c
-index a57eae6..0f731b6 100644
+index a180ca5..26cda70 100644
 --- a/dwl.c
 +++ b/dwl.c
 @@ -68,6 +68,7 @@
@@ -80,7 +80,7 @@ index a57eae6..0f731b6 100644
  #include "util.h"
  
  /* macros */
-@@ -145,6 +146,12 @@ typedef struct {
+@@ -141,6 +142,12 @@ typedef struct {
  	uint32_t resize; /* configure serial of a pending resize */
  } Client;
  
@@ -93,7 +93,7 @@ index a57eae6..0f731b6 100644
  typedef struct {
  	uint32_t mod;
  	xkb_keysym_t keysym;
-@@ -189,6 +196,7 @@ typedef struct {
+@@ -185,6 +192,7 @@ typedef struct {
  
  struct Monitor {
  	struct wl_list link;
@@ -101,8 +101,8 @@ index a57eae6..0f731b6 100644
  	struct wlr_output *wlr_output;
  	struct wlr_scene_output *scene_output;
  	struct wlr_scene_rect *fullscreen_bg; /* See createmon() for info */
-@@ -286,6 +294,17 @@ static void destroysessionlock(struct wl_listener *listener, void *data);
- static void destroysessionmgr(struct wl_listener *listener, void *data);
+@@ -282,6 +290,17 @@ static void destroypointerconstraint(struct wl_listener *listener, void *data);
+ static void destroysessionlock(struct wl_listener *listener, void *data);
  static void destroykeyboardgroup(struct wl_listener *listener, void *data);
  static Monitor *dirtomon(enum wlr_direction dir);
 +static void dwl_ipc_manager_bind(struct wl_client *client, void *data, uint32_t version, uint32_t id);
@@ -119,7 +119,7 @@ index a57eae6..0f731b6 100644
  static void focusclient(Client *c, int lift);
  static void focusmon(const Arg *arg);
  static void focusstack(const Arg *arg);
-@@ -339,6 +358,7 @@ static void startdrag(struct wl_listener *listener, void *data);
+@@ -335,6 +354,7 @@ static void startdrag(struct wl_listener *listener, void *data);
  static void tag(const Arg *arg);
  static void tagmon(const Arg *arg);
  static void tile(Monitor *m);
@@ -127,7 +127,7 @@ index a57eae6..0f731b6 100644
  static void togglefloating(const Arg *arg);
  static void togglefullscreen(const Arg *arg);
  static void toggletag(const Arg *arg);
-@@ -407,6 +427,9 @@ static unsigned int cursor_mode;
+@@ -402,6 +422,9 @@ static unsigned int cursor_mode;
  static Client *grabc;
  static int grabcx, grabcy; /* client-relative */
  
@@ -137,7 +137,7 @@ index a57eae6..0f731b6 100644
  static struct wlr_output_layout *output_layout;
  static struct wlr_box sgeom;
  static struct wl_list mons;
-@@ -701,6 +724,10 @@ cleanupmon(struct wl_listener *listener, void *data)
+@@ -727,6 +750,10 @@ cleanupmon(struct wl_listener *listener, void *data)
  	LayerSurface *l, *tmp;
  	size_t i;
  
@@ -148,7 +148,7 @@ index a57eae6..0f731b6 100644
  	/* m->layers[i] are intentionally not unlinked */
  	for (i = 0; i < LENGTH(m->layers); i++) {
  		wl_list_for_each_safe(l, tmp, &m->layers[i], link)
-@@ -982,6 +1009,7 @@ createmon(struct wl_listener *listener, void *data)
+@@ -1045,6 +1072,7 @@ createmon(struct wl_listener *listener, void *data)
  
  	m = wlr_output->data = ecalloc(1, sizeof(*m));
  	m->wlr_output = wlr_output;
@@ -156,7 +156,7 @@ index a57eae6..0f731b6 100644
  
  	for (i = 0; i < LENGTH(m->layers); i++)
  		wl_list_init(&m->layers[i]);
-@@ -1333,6 +1361,190 @@ dirtomon(enum wlr_direction dir)
+@@ -1391,6 +1419,190 @@ dirtomon(enum wlr_direction dir)
  	return selmon;
  }
  
@@ -347,7 +347,7 @@ index a57eae6..0f731b6 100644
  void
  focusclient(Client *c, int lift)
  {
-@@ -2034,38 +2246,8 @@ void
+@@ -2081,38 +2293,8 @@ void
  printstatus(void)
  {
  	Monitor *m = NULL;
@@ -388,16 +388,16 @@ index a57eae6..0f731b6 100644
  }
  
  void
-@@ -2595,6 +2777,8 @@ setup(void)
- 	LISTEN_STATIC(&output_mgr->events.apply, outputmgrapply);
- 	LISTEN_STATIC(&output_mgr->events.test, outputmgrtest);
+@@ -2645,6 +2827,8 @@ setup(void)
+ 	wl_signal_add(&output_mgr->events.apply, &output_mgr_apply);
+ 	wl_signal_add(&output_mgr->events.test, &output_mgr_test);
  
 +	wl_global_create(dpy, &zdwl_ipc_manager_v2_interface, 2, NULL, dwl_ipc_manager_bind);
 +
  	/* Make sure XWayland clients don't connect to the parent X server,
  	 * e.g when running in the x11 backend or the wayland backend and the
  	 * compositor has Xwayland support */
-@@ -2730,6 +2914,13 @@ tile(Monitor *m)
+@@ -2780,6 +2964,13 @@ tile(Monitor *m)
  	}
  }
  
@@ -599,5 +599,5 @@ index 0000000..0a6e7e5
 +  </interface>
 +</protocol>
 -- 
-2.47.0
+2.48.1
 

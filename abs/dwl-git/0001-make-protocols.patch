@@ -1,6 +1,6 @@
-From 004fce6ed9cd048b2232906c28985d499ebe11cf Mon Sep 17 00:00:00 2001
+From 2f726a38050082e1cfd2f95a834483231b888059 Mon Sep 17 00:00:00 2001
 From: shua <gpg@isthisa.email>
-Date: Sun, 3 Nov 2024 22:00:27 +0100
+Date: Tue, 21 Jan 2025 20:01:45 +0100
 Subject: [PATCH 1/4] make protocols
 
 ---
@@ -29,5 +29,5 @@ index e2f1816..09f0f5a 100644
 -CC = cc
 +CC = clang
 -- 
-2.47.0
+2.48.1
 
