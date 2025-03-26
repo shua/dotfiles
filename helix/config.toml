@@ -1,0 +1,21 @@
+theme = "shua"
+
+[editor]
+soft-wrap.enable = true
+bufferline = "multiple"
+end-of-line-diagnostics = "hint"
+
+[editor.inline-diagnostics]
+cursor-line = "error"
+other-lines = "error"
+
+[editor.whitespace.render]
+space = "all"
+nbsp = "all"
+tab = "all"
+
+[editor.whitespace.characters]
+space = "·"
+nbsp = "⍽"
+tab = "·"
+

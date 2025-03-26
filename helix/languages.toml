@@ -1,0 +1,37 @@
+[language-server.rust-analyzer.config.check]
+command = "clippy"
+
+[language-server.roc-ls]
+command = "roc_language_server"
+
+[[language]]
+name = "roc"
+scope = "source.roc"
+injection-regex = "roc"
+file-types = ["roc"]
+shebangs = ["roc"]
+roots = []
+comment-token = "#"
+language-servers = ["roc-ls"]
+indent = { tab-width = 2, unit = "  " }
+auto-format = true
+formatter = { command = "roc", args =[ "format", "--stdin", "--stdout"]}
+
+
+[language.auto-pairs]
+'(' = ')'
+'{' = '}'
+'[' = ']'
+'"' = '"'
+
+[[grammar]]
+name = "roc"
+# source = { git = "https://github.com/faldor20/tree-sitter-roc.git", rev = "a662513450e163dc2056603b1f426b4787aac0fd" }
+source = { git = "https://github.com/faldor20/tree-sitter-roc.git", rev = "ef46edd0c03ea30a22f7e92bc68628fb7231dc8a" }
+
+# current version 23.10-1 has wrong config
+# TODO: update helix to pull in fix
+[[grammar]]
+name = "gemini"
+source = { git = "https://git.sr.ht/~nbsp/tree-sitter-gemini", rev = "3cc5e4bdf572d5df4277fc2e54d6299bd59a54b3" }
+

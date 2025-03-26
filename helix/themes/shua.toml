@@ -1,0 +1,52 @@
+# Author : shua
+
+"ui.background" = { fg = "whiteD" } #, bg = "black2" }
+"ui.menu" = { fg = "whiteB", bg = "black2" }
+"ui.menu.selected" = { modifiers = ["reversed"] }
+#"ui.menu.scroll" = { fg = "black6" }
+"ui.linenr" = { fg = "black6" }
+"ui.linenr.selected" = { fg = "whiteD",  modifiers = ["bold"] }
+"ui.popup" = { bg = "black2" }
+"ui.selection" = { modifiers = [ "reversed"] }
+"ui.statusline" = { fg = "whiteD" }
+"ui.statusline.inactive" = { fg = "black6"  }
+"ui.cursor" = { modifiers = ["reversed"] }
+"ui.virtual.inlay-hint" = { fg = "black6", modifiers = ["dim"] }
+"ui.virtual.whitespace" = "black4"
+
+"attribute" = "whiteD"
+"comment" = "black6"
+"constant" = "whiteD"
+"keyword" = "black6"
+"label" = "black6"
+"namespace" = "black6"
+"operator" = "black6"
+"punctuation" = "black6"
+"special" = "black6"
+"string"  = "whiteD"
+"type" = "black6"
+"variable" = "whiteB"
+
+"markup.heading" = "black6"
+"markup.link.text" = "black6"
+"markup.quote" = "whiteB"
+
+"diff.plus" = "whiteB"
+"diff.delta" = "black6"
+"diff.minus" = "black6"
+
+"info" = { fg = "whiteB", modifiers = ["bold"] }
+"hint" = { fg = "whiteB", modifiers = ["bold"] }
+"debug" = { fg = "whiteB", modifiers = ["bold"] }
+"warning" = { fg = "whiteB", modifiers = ["bold"] }
+"error" = { fg = "whiteD", modifiers = ["bold"] }
+
+# target text of warn/error/etc diagnostic
+"diagnostic" = { modifiers = ["underlined"] }
+
+[palette]
+black2 = "#222222"
+black4 = "#444444"
+black6 = "#666666"
+whiteB = "#bbbbbb"
+whiteD = "#dddddd"
