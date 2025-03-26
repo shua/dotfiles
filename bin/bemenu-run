@@ -1,0 +1,3 @@
+#!/bin/sh
+
+/usr/bin/bemenu-run --fn "SourceCode Pro" 12 --tb="#222222" --nb="#222222" --fb="#222222" --hb="#ff9900" --sb="#222222" --tf="#aaaaaa" --ff="#dddddd" --hf="#444444" "$@"

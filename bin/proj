@@ -1,0 +1,196 @@
+#!/bin/sh
+
+set -o errexit -o pipefail -o nounset
+
+STATE=${XDG_STATE_HOME:-$HOME/.local/state}/projects
+
+arg0=$(basename $0)
+
+cmd=""
+if [ $# -gt 0 ]; then
+  cmd="$1"
+  shift
+fi
+
+if [ -z "${NO_COLOR:-}" ] && ! [ -t 1 ]; then
+  NO_COLOR=1
+else
+  NO_COLOR=""
+fi
+grey() {
+  if [ -z "$NO_COLOR" ]; then
+    printf '\033[2m%s\033[0m' "$*"
+  else
+    printf '%s' "$*"
+  fi
+}
+
+usage() {
+  echo "usage: $arg0 CMD"
+  echo "    $arg0 list                  list projects"
+  echo "    $arg0 new [TITLE]           create new project"
+  echo "    $arg0 update [ID] [STATUS]  update project status"
+  echo "    $arg0 show [ID]             show project"
+  echo "    $arg0 edit [ID]             edit project description"
+}
+
+## commands
+
+print_title() {
+  id="$1"
+  echo -e "$id\t$(head -n1 $STATE/$id/desc.txt)"
+}
+
+print_tags() {
+  id="$1"
+  cat "$STATE/$id/tags" | sed 's/^.*$/(&)/g' | tr '\n' ' '
+}
+
+print_status() {
+  case "$1" in
+  "TODO"|"DONE"|"DENIED") grey "$1";;
+  "DOING"|"APPLIED") echo "$1";;
+  *) echo "$1";;
+  esac
+}
+
+list_projects() {
+  f_tag=""
+  f_status=""
+  f_folder=""
+  while [ $# -gt 0 ]; do
+    case "$1" in
+    "--tag") f_tag="$2"; shift 2;;
+    "--status") f_status="$2"; shift 2;;
+    --*)
+      echo "valid flags are --tag or --status"
+      exit 2
+      ;;
+    *) f_folder="$1"; shift 1;;
+    esac
+  done
+
+  ls -ld "$STATE/$f_folder"*/[0-9]* --time-style=full-iso | sort -k6,7 | cut -d' ' -f9- \
+    | while read path; do
+        if [ -f "$path/desc.txt" ]; then
+          id="$(echo "$path" | sed 's#^'$STATE'/##')"
+          status=$(cat "$path/status")
+          if [ -n "$f_status" ] && [ "$f_status" != "$status" ]; then
+            continue
+          fi
+          if [ -n "$f_tag" ] && ! grep -qxF "$f_tag" "$path/tags"; then
+            continue
+          fi
+          echo -e "$(print_status $status)\t$(print_title $id)\t$(print_tags $id)";
+        fi
+      done \
+    | column -s "$(printf '\t')" -t \
+    | less -R -F
+}
+
+new_project() {
+  d="${1:-}"
+  if [ -z "$d" ]; then
+    printf 'directory: '
+    read d
+  fi
+  if [ -z "$d" ]; then echo "CANCEL"; return; fi
+
+  name="${2:-}"
+  if [ -z "$name" ]; then
+    printf 'project name (or empty line to cancel): '
+    read name
+  fi
+  if [ -z "$name" ]; then echo "CANCEL"; return; fi
+
+  idn=$(cat "$STATE/$d/next_id")
+  id="$d/$idn"
+  echo "$(($idn + 1))" >$STATE/$d/next_id
+  mkdir $STATE/$id
+  echo "$name" >$STATE/$id/desc.txt
+  echo "TODO" >$STATE/$id/status
+
+  $EDITOR $STATE/$id/desc.txt
+
+  printf 'Enter tags (empty line when finished):\n'
+  printf 'tag> '
+  touch $STATE/$id/tags
+  while read tag; do
+    if [ -z "$tag" ]; then break; fi;
+    echo "$tag" >>$STATE/$id/tags;
+    printf 'tag> '
+  done
+}
+
+read_id() {
+  id="$1"
+  if [ -z "$id" ]; then
+    printf 'project: '
+    read id
+  fi
+  if [ -z "$id" ]; then
+    exit 0
+  fi
+  if ! [ -d "$STATE/$id" ]; then
+    echo "error: project with id ($id) doesn't exist"
+    exit 2
+  fi
+}
+
+update_project() {
+  id="${1:-}"
+  status="${2:-}"
+  read_id "$id"
+  print_title $id
+  echo 'current status:' "$(cat $STATE/$id/status)"
+  if [ -n "$status" ]; then
+    echo "new status: $status"
+    echo "$status" >$STATE/$id/status
+  else
+    printf 'new status: '
+    read status
+    if [ -n "$status" ]; then
+      echo "$status" >$STATE/$id/status
+    fi
+  fi
+}
+
+edit_project() {
+  id="$1"
+  read_id "$id"
+  print_title "$id"
+  $EDITOR $STATE/$id/desc.txt
+}
+
+show_project() {
+  id="$1"
+  if [ -z "$id" ]; then
+    printf 'project: '
+    read id
+  fi
+  if ! [ -d "$STATE/$id" ]; then
+    echo "error: project with id ($id) doesn't exist"
+    exit 2
+  fi
+  title=$(print_title $id)
+  status=$(cat $STATE/$id/status)
+  tags=$(cat $STATE/$id/tags |sed 's/.*/(&)/g' |tr '\n' ' ')
+  body=$(tail -n+2 $STATE/$id/desc.txt)
+  echo -e "# $title\n\nstatus: $status\ntags: $tags\n$body" | bat -l md --style grid
+}
+
+
+## main
+
+case "$cmd" in
+"l"|"ls"|"list"|"") list_projects "$@" ;;
+"n"|"new")    new_project "$@";;
+"u"|"update") update_project "$@";;
+"e"|"edit")   edit_project "$@";;
+"show")       show_project "$@";;
+"git")        (cd $STATE; git "$@");;
+*)
+  usage
+  exit 2
+  ;;
+esac

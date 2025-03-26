@@ -1,0 +1,13 @@
+#!/bin/sh
+
+DOTFILE="$1"
+SVGFILE="$(mktemp /tmp/XXXXX.svg)"
+
+clean() {
+	test -f $SVGFILE && rm $SVGFILE || : ;
+}
+trap clean INT
+
+dot -Tsvg "$DOTFILE" -o "$SVGFILE"
+imv "$SVGFILE"
+clean

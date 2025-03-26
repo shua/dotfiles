@@ -1,0 +1,39 @@
+#!/bin/sh
+
+usage() {
+  cat <<USAGE
+gifcaption -i INPUT -c CAPTION [ -o OUTPUT ]
+
+INPUT can be a file or a youtube url; if it's a youtube url it will be downloaded to a file called ytdl.??? in the cwd
+CAPTION is the text will be centered at the bottom of the image
+if OUTPUT is not specified, "out.gif" is used
+USAGE
+}
+
+set -eu
+
+while [ $# -gt 0 ]; do case "$1" in
+-i) case "$2" in
+  http*://*youtube*) youtube-dl "$2" -o "ytdl"; input=$(ls ytdl.*);;
+  *) input="$2";;
+  esac
+  shift 2;;
+-c) caption="$2"; shift 2;;
+-o) output="$2"; shift 2;;
+*) echo "Unrecognized option \"$1\"" >&2; usage; exit 1;;
+esac; done
+set +u
+if [ -z "$output" ]; then output=out.gif; fi
+if [ -z "$input" ] || [ -z "$caption" ]; then echo "Missing required params" >&2; usage; exit 1; fi
+set -u
+
+ffmpeg -i "$input" \
+  -filter_complex "
+    [0:v] fps=12,scale=480:-1,
+    split [a][b];[a] palettegen [p];[b][p] paletteuse,
+    drawtext=
+      fontcolor=white:
+      text='$caption':
+      x=(main_w-text_w)/2:y=main_h-text_h-(line_h/2):
+      fontsize=24" \
+  "$output"

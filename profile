@@ -42,6 +42,8 @@ export GNUPGHOME=$HOME/.config/gnupg
 export MOZ_ENABLE_WAYLAND=1
 export HELIX_RUNTIME=$HOME/.config/helix/runtime
 export GOPATH=$HOME/.local/share/go
+export XDG_DESKTOP_DIR="/home/shua"
+export XDG_DOWNLOAD_DIR="/home/shua/dld"
 
 # UNTARNISHED_PATH=$PATH
 # . $HOME/.config/opam/opam-init/init.sh > /dev/null 2> /dev/null || true
@@ -122,17 +124,7 @@ alias gla="git lola"
 alias gp="git pull --rebase"
 alias gs="git status"
 
-alias rust-musl-builder='docker run --rm -it -v "$(pwd)":/home/rust/src ekidd/rust-musl-builder'
-
 alias wasabi='aws --endpoint-url https://s3.us-east-2.wasabisys.com --profile wasabi-jdll s3'
-
-#if [ "$(tty)" = "/dev/tty1" ]; then
-#	exec $HOME/bin/dwlinit
-#fi
-
-#if [ -n "$TMUX" ]; then
-#	tmux source ~/.config/tmux/tmux.conf
-#fi
 
 # echo sourced profile
 # echo PATH is $(echo "$PATH" |tr ':' ' ')
