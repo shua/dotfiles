@@ -13,7 +13,7 @@
 window#waybar {
     background-color: rgba(0, 0, 0, 0.9);
     /* border-bottom: 3px solid rgba(100, 114, 125, 0.5); */
-    color: #ffffff;
+    color: white;
     /* transition-property: background-color; */
     /* transition-duration: .5s; */
     /* border-radius: 0; */
@@ -28,23 +28,23 @@ window#waybar.empty {
     background-color: transparent;
 }
 window#waybar.solo {
-    background-color: #FFFFFF;
+    background-color: white;
 }
 */
 
 /* window#waybar.termite {
-    background-color: #000000;
+    background-color: black;
 }
 
 window#waybar.chromium {
-    background-color: #000000;
+    background-color: black;
     border: none;
 } */
 
 #workspaces button {
     /* padding: 0 0.4em; */
     /* background-color: transparent; */
-    color: #ffffff;
+    color: white;
     border-radius: 0;
     /* Use box-shadow instead of border so the text isn't offset */
     box-shadow: inset 0 -3px transparent;
@@ -53,12 +53,12 @@ window#waybar.chromium {
 /* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
 #workspaces button:hover {
     background: rgba(0, 0, 0, 0.9);
-    box-shadow: inset 0 -3px #ffffff;
+    box-shadow: inset 0 -3px white;
 }
 
 #workspaces button.focused {
     /* background-color: #64727D; */
-    box-shadow: inset 0 -3px #ffffff;
+    box-shadow: inset 0 -3px white;
 }
 
 #workspaces button.urgent {
@@ -67,7 +67,7 @@ window#waybar.chromium {
 
 #mode {
     background-color: #64727D;
-    /* border-bottom: 3px solid #ffffff; */
+    /* border-bottom: 3px solid white; */
 }
 
 #clock,
@@ -82,10 +82,11 @@ window#waybar.chromium {
 #tray,
 #mode,
 #idle_inhibitor,
+#language,
 #mpd {
     padding: 0 10px;
     margin: 6px 3px; 
-    color: #000000;
+    color: white;
 }
 
 #window,
@@ -104,30 +105,23 @@ window#waybar.chromium {
 }
 
 #clock {
-    background-color: #000000;
-    color: white;
 }
 
 #battery {
-    background-color: #000000;
-    color: white;
 }
-
 #battery.charging {
-    color: #ffffff;
-    background-color: #000000;
 }
 
 @keyframes blink {
     to {
-        background-color: #ffffff;
-        color: #000000;
+        background-color: white;
+        color: black;
     }
 }
 
 #battery.critical:not(.charging) {
     background-color: #f53c3c;
-    color: #ffffff;
+    color: white;
     animation-name: blink;
     animation-duration: 0.5s;
     animation-timing-function: linear;
@@ -136,62 +130,35 @@ window#waybar.chromium {
 }
 
 label:focus {
-    background-color: #000000;
 }
 
 #cpu {
-    background-color: #000000;
-    color: #ffffff;
 }
 
 #memory {
-    background-color: #000000;
-    color: white;
 }
 
 #backlight {
-    background-color: #000000;
-    color:white;
 }
 
 #network {
-    background-color: #000000;
-    color:white;
-
 }
-
 #network.disconnected {
     background-color: #f53c3c;
 }
 
 #pulseaudio {
-    background-color: #000000;
-    color: #ffffff;
+    background-color: black;
+    color: white;
 }
-
 #pulseaudio.muted {
-    background-color: #000000;
-    color: #ffffff;
-}
-
-#custom-media {
-    background-color: #66cc99;
-    color: #2a5c45;
-    min-width: 100px;
-}
-
-#custom-media.custom-spotify {
-    background-color: #66cc99;
-}
-
-#custom-media.custom-vlc {
-    background-color: #ffa000;
+    background-color: black;
+    color: white;
 }
 
 #temperature {
     background-color: #f0932b;
 }
-
 #temperature.critical {
     background-color: #eb4d4b;
 }
@@ -201,12 +168,11 @@ label:focus {
 }
 
 #idle_inhibitor {
-    background-color: #2d3436;
+    background-color: black;
 }
-
 #idle_inhibitor.activated {
-    background-color: #ecf0f1;
-    color: #2d3436;
+    background-color: white;
+    color: black;
 }
 
 #mpd {
@@ -226,10 +192,10 @@ label:focus {
     background-color: #51a37a;
 }
 
-#language {
-    background: #bbccdd;
-    color: #333333;
-    padding: 0 5px;
-    margin: 6px 3px;
-    min-width: 16px;
-}
+/* #language { */
+    /* background: #bbccdd; */
+    /* color: #333333; */
+    /* padding: 0 5px; */
+    /* margin: 6px 3px; */
+    /* min-width: 16px; */
+/* } */
