@@ -1,0 +1,29 @@
+@define-color bg #444;
+@define-color fg #ddd;
+
+* {
+  /* background: #444; */
+  color: @fg;
+}
+
+.widget-mpris-player, .widget-volume, .widget-buttons-grid {
+  border-top: solid 1 @bg;
+}
+
+
+.widget-mpris-player, .widget-mpris-album-art,
+.widget-volume,
+.widget-buttons-grid,
+button {
+  background: alpha(@bg, 0.8);
+  border: 0;
+  box-shadow: none;
+}
+
+button {
+  background: transparent;
+}
+
+button:hover {
+  background: #000000;
+}
