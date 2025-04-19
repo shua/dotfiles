@@ -44,6 +44,7 @@ export HELIX_RUNTIME=$HOME/.config/helix/runtime
 export GOPATH=$HOME/.local/share/go
 export XDG_DESKTOP_DIR="/home/shua"
 export XDG_DOWNLOAD_DIR="/home/shua/dld"
+export ELECTRON_OZONE_PLATFORM_HINT=wayland
 
 # UNTARNISHED_PATH=$PATH
 # . $HOME/.config/opam/opam-init/init.sh > /dev/null 2> /dev/null || true

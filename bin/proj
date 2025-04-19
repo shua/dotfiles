@@ -179,6 +179,13 @@ show_project() {
   echo -e "# $title\n\nstatus: $status\ntags: $tags\n$body" | bat -l md --style grid
 }
 
+archive_project() {
+  id="$1"
+  read_id "$id"
+  mkdir -p $STATE/archived/$(dirname $id)
+  mv $STATE/$id $STATE/archived/$id
+}
+
 
 ## main
 
@@ -187,6 +194,7 @@ case "$cmd" in
 "n"|"new")    new_project "$@";;
 "u"|"update") update_project "$@";;
 "e"|"edit")   edit_project "$@";;
+"archive")    archive_project "$@";;
 "show")       show_project "$@";;
 "git")        (cd $STATE; git "$@");;
 *)
